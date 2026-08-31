@@ -1,0 +1,111 @@
+﻿@model Edu_Project.Models.FinalExam
+
+@{
+    ViewData["Title"] = "Take Final Exam";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <h2>Final Exam</h2>
+
+            @if (Model.course != null)
+            {
+                <h5 class="text-muted">
+                    @Model.course.Title
+                </h5>
+            }
+
+            <p class="mb-1">
+                <strong>Duration:</strong>
+                @Model.Duration minutes
+            </p>
+
+            <p>
+                <strong>Total Marks:</strong>
+                @Model.TotalMarks
+            </p>
+
+        </div>
+    </div>
+
+    @if (Model.Question == null || !Model.Question.Any())
+    {
+        <div class="alert alert-info">
+            No questions are available for this exam.
+        </div>
+    }
+    else
+    {
+        <form asp-controller="FinalExam"
+              asp-action="Submit"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="finalExamId"
+                   value="@Model.Id" />
+
+            @{
+                int questionNumber = 1;
+            }
+
+            @foreach (var question in Model.Question)
+            {
+                <div class="card shadow-sm mb-4">
+
+                    <div class="card-body">
+
+                        <h5>
+                            Question @questionNumber
+                        </h5>
+
+                        <p class="fw-bold">
+                            @question.Text
+                        </p>
+
+                        @if (question.Answers != null)
+                        {
+                            @foreach (var answer in question.Answers)
+                            {
+                                <div class="form-check mb-2">
+
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="answers[@question.Id]"
+                                           value="@answer.Id"
+                                           id="answer_@answer.Id"
+                                           required />
+
+                                    <label class="form-check-label"
+                                           for="answer_@answer.Id">
+
+                                        @answer.Text
+
+                                    </label>
+
+                                </div>
+                            }
+                        }
+
+                    </div>
+
+                </div>
+
+                questionNumber++;
+            }
+
+            <button type="submit"
+                    class="btn btn-success w-100 mb-4">
+
+                Submit Final Exam
+
+            </button>
+
+        </form>
+    }
+
+</div>

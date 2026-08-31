@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Edu_Project.Models.FinalGrade>
+
+@{
+    ViewData["Title"] = "My Final Grades";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2>My Final Grades</h2>
+
+            <p class="text-muted mb-0">
+                View your final exam results.
+            </p>
+
+        </div>
+
+        <a asp-controller="Enrollment"
+           asp-action="MyCourses"
+           class="btn btn-outline-primary">
+
+            My Courses
+
+        </a>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+
+            You have not taken any final exams yet.
+
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Course</th>
+                        <th>Grade</th>
+                        <th>Total Marks</th>
+                        <th>Percentage</th>
+                        <th></th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var grade in Model)
+                    {
+                        var totalMarks =
+                            grade.Finalexam.TotalMarks;
+
+                        var percentage =
+                            totalMarks == 0
+                                ? 0
+                                : (grade.Grade * 100) /
+                                  totalMarks;
+
+                        <tr>
+
+                            <td>
+                                @grade.Finalexam.course?.Title
+                            </td>
+
+                            <td>
+                                @grade.Grade
+                            </td>
+
+                            <td>
+                                @totalMarks
+                            </td>
+
+                            <td>
+                                @percentage%
+                            </td>
+
+                            <td>
+
+                                <a asp-controller="FinalExam"
+                                   asp-action="Result"
+                                   asp-route-finalExamId="@grade.FinalexamId"
+                                   class="btn btn-sm btn-outline-primary">
+
+                                    View Result
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+</div>

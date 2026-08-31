@@ -1,0 +1,221 @@
+﻿@model IEnumerable<Edu_Project.Models.Lesson>
+
+@{
+    ViewData["Title"] = "Course Lessons";
+
+    var watchedLessonIds =
+        ViewBag.WatchedLessonIds as List<int>
+        ?? new List<int>();
+
+    var totalLessons = Model.Count();
+
+    var watchedLessons =
+        Model.Count(l =>
+            watchedLessonIds.Contains(l.Id));
+
+    var progress =
+        totalLessons == 0
+            ? 0
+            : (watchedLessons * 100) /
+              totalLessons;
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2>Course Lessons</h2>
+
+            <p class="text-muted mb-0">
+                Watch lessons and track your progress.
+            </p>
+        </div>
+
+        <a asp-controller="Enrollment"
+           asp-action="MyCourses"
+           class="btn btn-outline-primary">
+            Back to My Courses
+        </a>
+
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between">
+
+                <strong>
+                    Course Progress
+                </strong>
+
+                <span>
+                    @watchedLessons / @totalLessons Lessons
+                </span>
+
+            </div>
+
+            <div class="progress mt-3"
+                 style="height: 25px;">
+
+                <div class="progress-bar"
+                     role="progressbar"
+                     style="width: @progress%;">
+
+                    @progress%
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No lessons are available for this course.
+        </div>
+    }
+    else
+    {
+        @foreach (var lesson in Model)
+        {
+            var watched =
+                watchedLessonIds.Contains(
+                    lesson.Id);
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <h4>
+                                Lesson @lesson.Order:
+                                @lesson.Title
+                            </h4>
+
+                            <p class="text-muted">
+                                @lesson.Description
+                            </p>
+
+                            @if (lesson.Instructor != null)
+                            {
+                                <p>
+                                    <strong>
+                                        Instructor:
+                                    </strong>
+
+                                    @lesson.Instructor.UserName
+                                </p>
+                            }
+
+                        </div>
+
+                        @if (watched)
+                        {
+                            <span class="badge bg-success">
+                                Watched
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                Not Watched
+                            </span>
+                        }
+
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex gap-2 flex-wrap">
+
+                        @if (!string.IsNullOrWhiteSpace(
+                            lesson.VideoURL))
+                        {
+                            <a href="@lesson.VideoURL"
+                               target="_blank"
+                               class="btn btn-primary">
+
+                                Watch Lesson
+
+                            </a>
+                        }
+
+                        @if (!watched)
+                        {
+                            <form asp-controller="Lesson"
+                                  asp-action="MarkAsWatched"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden"
+                                       name="lessonId"
+                                       value="@lesson.Id" />
+
+                                <button type="submit"
+                                        class="btn btn-success">
+
+                                    Mark as Watched
+
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="Lesson"
+                                  asp-action="MarkAsNotWatched"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden"
+                                       name="lessonId"
+                                       value="@lesson.Id" />
+
+                                <button type="submit"
+                                        class="btn btn-outline-secondary">
+
+                                    Mark as Not Watched
+
+                                </button>
+
+                            </form>
+                        }
+
+                        @if (lesson.quiz != null)
+                        {
+                            <a asp-controller="Quiz"
+                               asp-action="Take"
+                               asp-route-quizId="@lesson.quiz.Id"
+                               class="btn btn-warning">
+
+                                Take Quiz
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+    }
+
+</div>

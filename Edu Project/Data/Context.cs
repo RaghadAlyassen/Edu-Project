@@ -1,18 +1,15 @@
 ﻿using Edu_Project.Models;
-using Edu_Project.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace Edu_Project.Data
 {
-    public class Context : IdentityDbContext
+    public class Context : IdentityDbContext<User>
     {
-        public Context(DbContextOptions<Context> options) : base(options)
+        public Context(DbContextOptions<Context> options)
+            : base(options)
         {
-
         }
-
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Instructor> Instructors { get; set; }
@@ -29,22 +26,6 @@ namespace Edu_Project.Data
         public DbSet<FinalGrade> Finalgrades { get; set; }
         public DbSet<Answer> Answers { get; set; }
         public DbSet<StudentAnswer> StudentAnswers { get; set; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -126,13 +107,13 @@ namespace Edu_Project.Data
                 .HasOne(fe => fe.course)
                 .WithOne(c => c.Finalexam)
                 .HasForeignKey<FinalExam>(fe => fe.courseId)
-                .OnDelete(DeleteBehavior.NoAction); ;
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Quiz>()
                 .HasOne(qz => qz.Lesson)
                 .WithOne(l => l.quiz)
                 .HasForeignKey<Quiz>(qz => qz.LessonId)
-                .OnDelete(DeleteBehavior.NoAction); ;
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Lesson>()
                 .HasOne(l => l.Instructor)
@@ -161,19 +142,40 @@ namespace Edu_Project.Data
                 .HasForeignKey(ct => ct.InstructorId);
 
             builder.Entity<Enrollment>()
-                .HasKey(e => new { e.StudentId, e.CourseId });
+                .HasKey(e => new
+                {
+                    e.StudentId,
+                    e.CourseId
+                });
 
             builder.Entity<StudentAnswer>()
-                .HasKey(st => new { st.studentId, st.questionId, st.answerId });
+                .HasKey(st => new
+                {
+                    st.studentId,
+                    st.questionId,
+                    st.answerId
+                });
 
             builder.Entity<QuizGrade>()
-                .HasKey(qg => new { qg.StudentId, qg.quizId });
+                .HasKey(qg => new
+                {
+                    qg.StudentId,
+                    qg.quizId
+                });
 
             builder.Entity<FinalGrade>()
-                .HasKey(fg => new { fg.FinalexamId, fg.StudentId });
+                .HasKey(fg => new
+                {
+                    fg.FinalexamId,
+                    fg.StudentId
+                });
 
             builder.Entity<LessonWatch>()
-                .HasKey(lw => new { lw.StudentId, lw.LessonId });
+                .HasKey(lw => new
+                {
+                    lw.StudentId,
+                    lw.LessonId
+                });
 
             builder.Entity<Answer>()
                 .HasOne(a => a.Question)
@@ -181,19 +183,9 @@ namespace Edu_Project.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Exam>()
-             .HasOne(e => e.Instructor)
-             .WithMany(i => i.Exams)
-             .HasForeignKey(e => e.InstructorId);
-
-
-
-
-
-
+                .HasOne(e => e.Instructor)
+                .WithMany(i => i.Exams)
+                .HasForeignKey(e => e.InstructorId);
         }
-
-
-
     }
-
 }

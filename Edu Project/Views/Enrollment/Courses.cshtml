@@ -1,0 +1,128 @@
+﻿@model IEnumerable<Edu_Project.Models.Course>
+
+@{
+    ViewData["Title"] = "Courses";
+
+    var enrolledCourseIds =
+        ViewBag.EnrolledCourseIds as List<int>
+        ?? new List<int>();
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Available Courses</h2>
+            <p class="text-muted mb-0">
+                Browse courses and enroll in the ones you want.
+            </p>
+        </div>
+
+        <a asp-controller="Enrollment"
+           asp-action="MyCourses"
+           class="btn btn-outline-primary">
+            My Courses
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No courses are available right now.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+
+            @foreach (var course in Model)
+            {
+                var isEnrolled =
+                    enrolledCourseIds.Contains(course.Id);
+
+                <div class="col-md-6 col-lg-4 mb-4">
+
+                    <div class="card h-100 shadow-sm">
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                @course.Title
+                            </h5>
+
+                            <p class="card-text text-muted">
+                                @course.Descciption
+                            </p>
+
+                            <p>
+                                <strong>Price:</strong>
+                                @course.Price
+                            </p>
+
+                            @if (course.Category != null)
+                            {
+                                <p class="mb-2">
+                                    <strong>Category:</strong>
+                                    @course.Category.Name
+                                </p>
+                            }
+
+                            @if (course.Instructor != null)
+                            {
+                                <p class="mb-3">
+                                    <strong>Instructor:</strong>
+                                    @course.Instructor.UserName
+                                </p>
+                            }
+
+                            @if (isEnrolled)
+                            {
+                                <button class="btn btn-success w-100"
+                                        disabled>
+                                    Enrolled
+                                </button>
+                            }
+                            else
+                            {
+                                <form asp-controller="Enrollment"
+                                      asp-action="Enroll"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="courseId"
+                                           value="@course.Id" />
+
+                                    <button type="submit"
+                                            class="btn btn-primary w-100">
+                                        Enroll
+                                    </button>
+                                </form>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

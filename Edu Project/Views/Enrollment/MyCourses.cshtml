@@ -1,0 +1,147 @@
+﻿@model IEnumerable<Edu_Project.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "My Courses";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2>My Courses</h2>
+
+            <p class="text-muted mb-0">
+                Courses you are currently enrolled in.
+            </p>
+        </div>
+
+        <a asp-controller="Enrollment"
+           asp-action="Courses"
+           class="btn btn-primary">
+            Browse Courses
+        </a>
+
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You are not enrolled in any courses yet.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+
+            @foreach (var enrollment in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+
+                    <div class="card h-100 shadow-sm">
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                @enrollment.Course.Title
+                            </h5>
+
+                            <p class="card-text text-muted">
+                                @enrollment.Course.Descciption
+                            </p>
+
+                            <p>
+                                <strong>Price:</strong>
+                                @enrollment.Course.Price
+                            </p>
+
+                            @if (enrollment.Course.Category != null)
+                            {
+                                <p>
+                                    <strong>Category:</strong>
+                                    @enrollment.Course.Category.Name
+                                </p>
+                            }
+
+                            @if (enrollment.Course.Instructor != null)
+                            {
+                                <p>
+                                    <strong>Instructor:</strong>
+                                    @enrollment.Course.Instructor.UserName
+                                </p>
+                            }
+
+                            <p>
+                                <strong>Enrollment Date:</strong>
+                                @enrollment.EnrollmentDate.ToString("dd/MM/yyyy")
+                            </p>
+
+                            <div class="d-grid gap-2">
+
+                                <a asp-controller="Lesson"
+                                   asp-action="CourseLessons"
+                                   asp-route-courseId="@enrollment.CourseId"
+                                   class="btn btn-outline-primary">
+
+                                    View Lessons
+
+                                </a>
+
+                                @if (enrollment.Course.Finalexam != null)
+                                {
+                                    <a asp-controller="FinalExam"
+                                       asp-action="Take"
+                                       asp-route-finalExamId="@enrollment.Course.Finalexam.Id"
+                                       class="btn btn-warning">
+
+                                        Take Final Exam
+
+                                    </a>
+                                }
+
+                                <form asp-controller="Enrollment"
+                                      asp-action="Unenroll"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="courseId"
+                                           value="@enrollment.CourseId" />
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger w-100">
+
+                                        Unenroll
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

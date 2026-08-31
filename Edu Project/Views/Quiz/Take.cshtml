@@ -1,0 +1,102 @@
+﻿@model Edu_Project.Models.Quiz
+
+@{
+    ViewData["Title"] = "Take Quiz";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <h2>@Model.Title</h2>
+
+            <p class="text-muted mb-1">
+                <strong>Duration:</strong>
+                @Model.Duration minutes
+            </p>
+
+            <p class="text-muted">
+                <strong>Total Marks:</strong>
+                @Model.TotalMarks
+            </p>
+
+        </div>
+    </div>
+
+    @if (Model.Questions == null || !Model.Questions.Any())
+    {
+        <div class="alert alert-info">
+            No questions are available for this quiz.
+        </div>
+    }
+    else
+    {
+        <form asp-controller="Quiz"
+              asp-action="Submit"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="quizId"
+                   value="@Model.Id" />
+
+            @{
+                int questionNumber = 1;
+            }
+
+            @foreach (var question in Model.Questions)
+            {
+                <div class="card shadow-sm mb-4">
+
+                    <div class="card-body">
+
+                        <h5 class="mb-3">
+                            Question @questionNumber
+                        </h5>
+
+                        <p class="fw-bold">
+                            @question.Text
+                        </p>
+
+                        @if (question.Answers != null)
+                        {
+                            @foreach (var answer in question.Answers)
+                            {
+                                <div class="form-check mb-2">
+
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="answers[@question.Id]"
+                                           value="@answer.Id"
+                                           id="answer_@answer.Id"
+                                           required />
+
+                                    <label class="form-check-label"
+                                           for="answer_@answer.Id">
+
+                                        @answer.Text
+
+                                    </label>
+
+                                </div>
+                            }
+                        }
+
+                    </div>
+
+                </div>
+
+                questionNumber++;
+            }
+
+            <button type="submit"
+                    class="btn btn-success w-100 mb-4">
+                Submit Quiz
+            </button>
+
+        </form>
+    }
+
+</div>

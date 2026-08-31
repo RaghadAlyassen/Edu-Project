@@ -1,0 +1,101 @@
+﻿@model Edu_Project.Models.FinalGrade
+
+@{
+    ViewData["Title"] = "Final Exam Result";
+
+    var finalExam =
+        ViewBag.FinalExam as Edu_Project.Models.FinalExam;
+
+    var totalMarks =
+        finalExam?.TotalMarks ?? 0;
+
+    var percentage =
+        totalMarks == 0
+            ? 0
+            : (Model.Grade * 100) / totalMarks;
+}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="card shadow text-center">
+
+                <div class="card-body p-5">
+
+                    <h2 class="mb-4">
+                        Final Exam Result
+                    </h2>
+
+                    @if (finalExam?.course != null)
+                    {
+                        <h4>
+                            @finalExam.course.Title
+                        </h4>
+                    }
+
+                    <div class="display-4 fw-bold text-primary my-4">
+
+                        @Model.Grade / @totalMarks
+
+                    </div>
+
+                    <p class="fs-5">
+
+                        Percentage:
+
+                        <strong>
+                            @percentage%
+                        </strong>
+
+                    </p>
+
+                    @if (percentage >= 50)
+                    {
+                        <div class="alert alert-success mt-4">
+
+                            Congratulations!
+                            You passed the final exam.
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mt-4">
+
+                            You did not pass the final exam.
+
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <a asp-controller="FinalExam"
+                           asp-action="MyFinalGrades"
+                           class="btn btn-primary">
+
+                            My Final Grades
+
+                        </a>
+
+                        <a asp-controller="Enrollment"
+                           asp-action="MyCourses"
+                           class="btn btn-outline-secondary">
+
+                            Back to My Courses
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

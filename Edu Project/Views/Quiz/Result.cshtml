@@ -1,0 +1,87 @@
+﻿@model Edu_Project.Models.QuizGrade
+
+@{
+    ViewData["Title"] = "Quiz Result";
+
+    var quiz =
+        ViewBag.Quiz as Edu_Project.Models.Quiz;
+
+    var totalMarks =
+        quiz?.TotalMarks ?? 0;
+
+    var percentage =
+        totalMarks == 0
+            ? 0
+            : (Model.Grade * 100) / totalMarks;
+}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="card shadow text-center">
+
+                <div class="card-body p-5">
+
+                    <h2 class="mb-4">
+                        Quiz Result
+                    </h2>
+
+                    @if (quiz != null)
+                    {
+                        <h4>
+                            @quiz.Title
+                        </h4>
+                    }
+
+                    <div class="display-4 fw-bold text-primary my-4">
+
+                        @Model.Grade / @totalMarks
+
+                    </div>
+
+                    <p class="fs-5">
+                        Percentage:
+                        <strong>@percentage%</strong>
+                    </p>
+
+                    @if (percentage >= 50)
+                    {
+                        <div class="alert alert-success mt-4">
+                            Congratulations! You passed the quiz.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mt-4">
+                            You did not pass this quiz.
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <a asp-controller="Quiz"
+                           asp-action="MyGrades"
+                           class="btn btn-primary">
+                            My Quiz Grades
+                        </a>
+
+                        <a asp-controller="Enrollment"
+                           asp-action="MyCourses"
+                           class="btn btn-outline-secondary">
+                            Back to My Courses
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
