@@ -1,0 +1,30 @@
+﻿@model Quiz
+
+<form asp-action="EditQuiz" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="LessonId" />
+
+    <label>Title</label>
+    <input type="text" asp-for="Title" /><br />
+
+    <label>Total Marks</label>
+    <input type="number" asp-for="TotalMarks" /><br />
+
+    <label>Duration</label>
+    <input type="number" asp-for="Duration" /><br />
+
+    <h3>Questions</h3>
+    @for (int i = 0; i < Model.Questions.Count; i++)
+    {
+        <input type="text" name="Questions[@i].Text" value="@Model.Questions.ToList()[i].Text" /><br />
+
+        @for (int j = 0; j < Model.Questions.ToList()[i].Answers.Count; j++)
+        {
+            <input type="text" name="Questions[@i].Answers[@j].Text" value="@Model.Questions.ToList()[i].Answers.ToList()[j].Text" />
+            @(Model.Questions.ToList()[i].Answers.ToList()[j].IsCorrect ? "(Correct)" : "")
+            <br />
+        }
+    }
+
+    <button type="submit">Save</button>
+</form>

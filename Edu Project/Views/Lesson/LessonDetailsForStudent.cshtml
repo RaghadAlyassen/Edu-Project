@@ -1,0 +1,10 @@
+﻿@model List<Lesson>
+@foreach (var i in Model)
+{
+    <p>Title : @i.Title<br />
+        description : @i.Description<br />
+        order : @i.Order<br />
+        video link : <a href="@i.VideoURL" target="_blank">click her</a>
+    </p>
+        <a asp-action="TakeQuiz" asp-controller="Exam" asp-route-lessonid="@i.Id">quiz</a>
+}

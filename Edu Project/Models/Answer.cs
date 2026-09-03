@@ -13,12 +13,5 @@ namespace Edu_Project.Models
         public Question Question { get; set; }
 
 
-
-
-
-
-
-
-
     }
 }

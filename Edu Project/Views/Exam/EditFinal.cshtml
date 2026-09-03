@@ -1,0 +1,30 @@
+﻿@model FinalExam
+
+<form asp-action="EditFinal" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="courseId" />
+
+    <label>Title</label>
+    <input asp-for="Title" /><br />
+
+    <label>Total Marks</label>
+    <input asp-for="TotalMarks" /><br />
+
+    <label>Duration</label>
+    <input asp-for="Duration" /><br />
+
+    <h3>Questions</h3>
+    @for (int qi = 0; qi < Model.Question.Count; qi++)
+    {
+        <input type="text" name="Question[@qi].Text" value="@Model.Question.ToList()[qi].Text" /><br />
+
+        @for (int aj = 0; aj < Model.Question.ToList()[qi].Answers.Count; aj++)
+        {
+            <input type="text" name="Question[@qi].Answers[@aj].Text" value="@Model.Question.ToList()[qi].Answers.ToList()[aj].Text" />
+            @(Model.Question.ToList()[qi].Answers.ToList()[aj].IsCorrect ? "(Correct)" : "")
+            <br />
+        }
+    }
+
+    <button type="submit">Save</button>
+</form>

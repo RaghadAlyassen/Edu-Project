@@ -1,0 +1,27 @@
+﻿@model List<Lesson>
+
+@if (Model != null && Model.Any())
+{
+    
+    @foreach (var i in Model)
+    {
+        <p>
+            Title : @i.Title <br />
+            Description : @i.Description <br />
+            Order : @i.Order <br />
+            Video link : <a href="@i.VideoURL" target="_blank">Watch Video</a><br />
+            <a asp-action="DeleteLesson" asp-route-id="@i.Id" asp-controller="Leson" class="btn btn-danger">Delete</a>
+            <a asp-action="EditLesson" asp-route-id="@i.Id" asp-controller="Leson" class="btn btn-primary">Edit</a>
+            <a asp-action="QuizDetails" asp-route-id="@i.Id"  asp-controller="Exam" class="btn btn-primary">Quiz details</a>
+        </p>
+    }
+
+    
+    <a asp-action="CreateLesson" asp-controller="Leson" asp-route-cid="@ViewBag.cid" class="btn btn-success">+ Add Lesson</a>
+}
+else
+{
+    
+    <p>No lessons found for this course.</p>
+    <a asp-action="CreateLesson" asp-controller="Leson" asp-route-cid="@ViewBag.cid" class="btn btn-success">+ Add Lesson</a>
+}

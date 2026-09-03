@@ -1,0 +1,17 @@
+﻿@model Quiz
+<h1>details</h1>
+<p>
+    title : @Model.Title <br />
+    duration : @Model.Duration
+    total mark : @Model.TotalMarks
+</p>
+<h1>questions</h1>
+@foreach (var i in Model.Questions)
+{
+    <p>- @i.Text ?</p><br />
+    foreach (var j in i.Answers)
+    {
+        <p>* @j.Text</p>
+    }
+}
+<a asp-action="EditQuiz" asp-controller="Exam" asp-route-id="@Model.Id" class="btn btn">edit</a>
