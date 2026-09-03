@@ -1,0 +1,39 @@
+﻿@model List<QuestionVM>
+
+<form asp-action="InsertQuestions" method="post">
+    <input type="hidden" name="examid" value="@ViewBag.examid" />
+    <input type="hidden" name="examtype" value="@ViewBag.examtype" />
+
+    <div id="questions-container">
+        
+    </div>
+
+    <button type="button" onclick="addQuestion()">Add Question</button>
+    <button type="submit">Save</button>
+</form>
+
+<script>
+    let questionIndex = 0;
+
+    function addQuestion() {
+        let container = document.getElementById("questions-container");
+
+        let questionHtml = `
+            <div class="question-block">
+                <label>Question ${questionIndex + 1} :</label>
+                <input type="text" name="models[${questionIndex}].text" /><br/>
+
+                ${[0,1,2,3].map(j => `
+                    <label>Answer ${j+1} :</label>
+                    <input type="text" name="models[${questionIndex}].answers[${j}]" /><br/>
+                `).join("")}
+
+                <label>Correct answer number :</label>
+                <input type="number" name="models[${questionIndex}].correct" />
+            </div>
+        `;
+
+        container.insertAdjacentHTML("beforeend", questionHtml);
+        questionIndex++;
+    }
+</script>

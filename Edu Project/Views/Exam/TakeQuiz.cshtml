@@ -1,0 +1,22 @@
+﻿@model Quiz
+<h1>duration : @Model.Duration</h1>
+<form asp-action="TakeQuiz" method="post">
+    <input type="hidden" name="quizid" value="@Model.Id" />
+    @{
+            var questions = Model.Questions.ToList();
+        }
+
+    @for (int i =0;i< questions.Count;i++)
+        {
+            <label>- @questions[i].Text ?</label><br />
+            @for (int j=0;j<4;j++)
+            {
+            <input type="radio" name="answers[@i]" value="@questions[i].Answers.ToList()[j].Id" required  />
+                @questions[i].Answers.ToList()[j].Text
+            }
+
+        }
+        <button type="reset" >clean</button><br />
+        <button type="submit" >send</button>
+    </form>
+   

@@ -8,8 +8,5 @@
         public int LessonId { get; set; }
         public ICollection<Question> Questions { get; set; }
         public ICollection<QuizGrade> Quizgrades { get; set; }
-
-
-
     }
 }

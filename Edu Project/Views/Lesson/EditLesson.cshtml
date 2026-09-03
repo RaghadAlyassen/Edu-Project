@@ -1,0 +1,14 @@
+﻿@model Lesson
+<form asp-action="EditLesson" method="post">
+    <p>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="CourseId" />
+        <label>Title : </label>
+        <input type="text" asp-for="Title" value="@Model.Title" /><br />
+        <label>description : </label>
+        <input type="text" asp-for="Description" value="@Model.Description" /><br />
+        <label>video link : </label>
+        <input type="url" asp-for="VideoURL" value=@Model.VideoURL />
+        <button type="submit">Submit</button>
+    </p>
+</form>

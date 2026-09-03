@@ -1,0 +1,16 @@
+﻿@model FinalVM
+
+<form asp-action="CreateFinal" method="post">
+    <input type="hidden" name="courseid" value="@Model.courseid" />
+
+    <label>Title : </label>
+    <input type="text" name="Title" value="@Model.Title" /><br />
+
+    <label>Duration (minutes): </label>
+    <input type="number" name="duration" value="@Model.duration" /><br />
+
+    <label>Total marks : </label>
+    <input type="number" name="totalmarks" value="@Model.totalmarks" /><br />
+
+    <button type="submit">Questions</button>
+</form>

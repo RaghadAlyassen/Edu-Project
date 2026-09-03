@@ -1,0 +1,14 @@
+﻿@model Lesson
+<form asp-action="CreateLesson"method="post">
+    <input type="hidden" asp-for="CourseId" value="@ViewBag.courseid" />
+    <label>lesson title : </label>
+    <input type="text" asp-for="Title" required ><br />
+    <label>order : </label>
+    <input type="number" asp-for="Order" required /><br />
+    <label>video URL : </label>
+    <input type="url" asp-for="VideoURL" required /><br />
+    <label>description : </label>
+    <input type="text" asp-for="Description"  required/>
+    <button type="submit">quiz</button>
+
+</form>
