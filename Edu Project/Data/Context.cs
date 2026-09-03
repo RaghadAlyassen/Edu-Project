@@ -10,6 +10,7 @@ namespace Edu_Project.Data
             : base(options)
         {
         }
+        
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Instructor> Instructors { get; set; }

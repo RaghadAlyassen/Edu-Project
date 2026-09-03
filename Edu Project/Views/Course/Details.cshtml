@@ -1,0 +1,30 @@
+﻿@model Edu_Project.Models.Course
+
+@{
+    ViewData["Title"] = "Course Details";
+}
+
+<div class="container mt-4">
+    <h2>Course Details</h2>
+    <hr />
+    <div class="card shadow-sm p-4">
+        <dl class="row">
+            <dt class="col-sm-3 fw-bold">Title:</dt>
+            <dd class="col-sm-9">@Model.Title</dd>
+
+            <dt class="col-sm-3 fw-bold">Descciption:</dt>
+            <dd class="col-sm-9">@Model.Descciption</dd>
+
+            <dt class="col-sm-3 fw-bold">Category:</dt>
+            <dd class="col-sm-9"><span class="badge bg-info text-dark">@Model.Category?.Name</span></dd>
+
+            <dt class="col-sm-3 fw-bold">Instructor:</dt>
+            <dd class="col-sm-9">@Model.Instructor?.UserName</dd>
+        </dl>
+    </div>
+    <div class="mt-3">
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">Edit</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        <a asp-controller="Instructor" asp-action="Index" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>

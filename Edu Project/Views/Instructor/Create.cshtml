@@ -1,0 +1,49 @@
+﻿@model Edu_Project.Models.Instructor
+
+@{
+    ViewData["Title"] = "Add New Instructor";
+}
+
+<div class="container mt-4">
+    <h2>Add New Instructor</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" method="post">
+
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label fw-bold"></label>
+                    <input asp-for="UserName" class="form-control" autocomplete="off" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+
+                
+                <div class="mb-3">
+                    <label asp-for="Specialization" class="form-label fw-bold"></label>
+                    <input asp-for="Specialization" class="form-control" autocomplete="off" />
+                    <span asp-validation-for="Specialization" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProfileImg" class="form-label fw-bold"></label>
+                    <input asp-for="ProfileImg" class="form-control" autocomplete="off" />
+                    <span asp-validation-for="ProfileImg" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-dark">Create</button>
+                    <a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

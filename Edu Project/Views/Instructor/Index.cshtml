@@ -1,0 +1,156 @@
+﻿@model IEnumerable<Edu_Project.Models.Instructor>
+
+@{
+    ViewData["Title"] = "Instructor Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-primary fw-bold">Instructor Portal Dashboard</h1>
+            <p class="text-muted">Manage all instructors, courses, and categories from one central view.</p>
+            <hr />
+        </div>
+    </div>
+
+    
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-dark">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Instructors</h4>
+                    <a asp-action="Create" class="btn btn-light btn-sm fw-bold">Create Instructor</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Profile Img</th>
+                                    <th>User Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.ProfileImg))
+                                            {
+                                                <img src="@item.ProfileImg" alt="Profile" class="rounded-circle" width="40" height="40" />
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">No Image</span>
+                                            }
+                                        </td>
+                                        <td class="fw-semibold">@item.UserName</td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm text-white">Details</a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                                        </td>
+                                    </tr>
+                                }
+                                       </tbody>
+                                       </table>
+                                        </div>
+                                        </div>
+                                       </div>
+                                     </div>
+                                   </div>
+
+    
+    <div class="row">
+
+        
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-primary h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Courses</h5>
+                    <a asp-controller="Course" asp-action="Create" class="btn btn-light btn-sm fw-bold text-primary">Create Course</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Instructor</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.Courses != null)
+                                {
+                                    @foreach (var course in ViewBag.Courses)
+                                    {
+                                        <tr>
+                                            <td class="fw-bold">@course.Title</td>
+                                            <td><span class="badge bg-info text-dark">@(course.Category?.Name ?? "N/A")</span></td>
+                                            <td><span class="badge bg-secondary">@(course.Instructor?.UserName ?? "N/A")</span></td>
+                                            <td>
+                                                <a asp-controller="Course" asp-action="Edit" asp-route-id="@course.Id" class="btn btn-warning btn-sm py-0 px-2">Edit</a>
+                                                <a asp-controller="Course" asp-action="Details" asp-route-id="@course.Id" class="btn btn-info btn-sm text-white py-0 px-2">Details</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="4" class="text-muted text-center">No courses found.</td></tr>
+                                }
+                            </tbody>
+                          </table>
+                         </div>
+                        </div>
+                       </div>
+                      </div>
+
+       
+                 <div class="col-md-6 mb-4">
+                 <div class="card shadow-sm border-success h-100">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Categories</h5>
+                <a asp-controller="Category" asp-action="Create" class="btn btn-light btn-sm fw-bold text-success">Create Category</a>
+                </div>
+                <div class="card-body">
+                <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle">
+                              <thead>       
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Instructor</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.Categories != null)
+                                {
+                                    @foreach (var cat in ViewBag.Categories)
+                                    {
+                                        <tr>
+                                            <td class="fw-bold">@cat.Name</td>
+                                            <td><span class="badge bg-secondary">@(cat.Instructor?.UserName ?? "N/A")</span></td>
+                                            <td>
+                                                <a asp-controller="Category" asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-warning btn-sm py-0 px-2">Edit</a>
+                                                <a asp-controller="Category" asp-action="Details" asp-route-id="@cat.Id" class="btn btn-info btn-sm text-white py-0 px-2">Details</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="3" class="text-muted text-center">No categories found.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                       </div>
+                      </div>
+                     </div>
+                     </div>
+
+                   </div>
+                   </div>

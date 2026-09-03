@@ -48,7 +48,7 @@ namespace Edu_Project
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Instructor}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             using (var scope = app.Services.CreateScope())
