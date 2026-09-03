@@ -113,9 +113,22 @@ namespace Edu_Project.Controllers
                 }
             }
             context.SaveChanges();
-            return View();
+            if (examtype == "final")
+            {
+                var final = context.FinalExams.FirstOrDefault(f => f.Id == examid);
+                return RedirectToAction("Details", "Course", new { Id = final.courseId });
+            }
+            else if (examtype == "quiz")
+            {
+                var quiz = context.Quizzes.FirstOrDefault(q => q.Id==examid);
+                return RedirectToAction("LessonDetailsForInstructor", "Leson", new { id = quiz.LessonId });
+            }
+            else
+            {
+                return NotFound();
+            }
         }
-        //لسه محطتش هي راحة فين
+        
         [HttpGet]
         public IActionResult TakeQuiz(int lessonid)
         {
