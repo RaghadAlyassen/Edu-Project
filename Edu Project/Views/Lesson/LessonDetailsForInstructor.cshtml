@@ -16,7 +16,7 @@
         </p>
     }
 
-    
+    <a asp-controller="Exam" asp-action="FinalDetails" asp-route-id="@Model[0].CourseId" class="btn btn-primary"></a>
     <a asp-action="CreateLesson" asp-controller="Leson" asp-route-cid="@ViewBag.cid" class="btn btn-success">+ Add Lesson</a>
 }
 else
