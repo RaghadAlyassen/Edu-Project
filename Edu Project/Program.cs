@@ -31,7 +31,7 @@ namespace Edu_Project
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Instructor}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();

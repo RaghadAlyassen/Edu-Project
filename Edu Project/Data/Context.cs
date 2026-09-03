@@ -12,6 +12,7 @@ namespace Edu_Project.Data
         {
 
         }
+        
 
 
         public DbSet<Student> Students { get; set; }
