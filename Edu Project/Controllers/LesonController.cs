@@ -1,5 +1,6 @@
 ﻿using Edu_Project.Data;
 using Edu_Project.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -8,6 +9,7 @@ namespace Edu_Project.Controllers
     public class LesonController : Controller
     {
         Context context;
+        UserManager<User> usermanager;
         [HttpGet]
         public IActionResult CreateLesson(int cid)
         {
@@ -17,6 +19,7 @@ namespace Edu_Project.Controllers
         [HttpPost]
         public IActionResult CreateLesson(Lesson l)
         {
+            l.InstructorId= usermanager.GetUserId(User);
             if (ModelState.IsValid)
             {
                 context.Lessons.Add(l);
@@ -24,7 +27,11 @@ namespace Edu_Project.Controllers
                 return RedirectToAction("CreateQuiz", "Exam", new { lid = l.Id });
                 
             }
-            return View();
+            else
+            {
+                return View(new { cid = l.CourseId });
+            }
+
         }
         public IActionResult LessonDetailsForStudent(int id )
         {
@@ -40,6 +47,8 @@ namespace Edu_Project.Controllers
         public IActionResult DeleteLesson(int id)
         {
             var lesson = context.Lessons.FirstOrDefault(l => l.Id == id);
+            var quiz = context.Quizzes.FirstOrDefault(q => q.LessonId == id);
+            context.Quizzes.Remove(quiz);
             context.Lessons.Remove(lesson);
             context.SaveChanges();
             return RedirectToAction("LessonDetailsForInstructor",new {id=lesson.CourseId});
