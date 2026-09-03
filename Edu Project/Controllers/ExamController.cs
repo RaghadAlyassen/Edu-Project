@@ -24,16 +24,21 @@ namespace Edu_Project.Controllers
         [HttpPost]
         public IActionResult CreateQuiz(QuizVM vm)
         {
-            var quiz = new Quiz()
+           if (ModelState.IsValid)
             {
-                Title = vm.Title,
-                Duration = vm.duration,
-                TotalMarks = vm.totalmarks,
-                LessonId = vm.lessonid,
-            };
-            context.Quizzes.Add(quiz);
-            context.SaveChanges();
-            return RedirectToAction("InsertQuestions", new { examtype = "quiz", examid = quiz.Id });
+                var quiz = new Quiz()
+                {
+                    Title = vm.Title,
+                    Duration = vm.duration,
+                    TotalMarks = vm.totalmarks,
+                    LessonId = vm.lessonid,
+                    InstructorId = usermanager.GetUserId(User)
+                };
+                context.Quizzes.Add(quiz);
+                context.SaveChanges();
+                return RedirectToAction("InsertQuestions", new { examtype = "quiz", examid = quiz.Id });
+            }
+           return View(vm);
         }
 
 
@@ -49,16 +54,23 @@ namespace Edu_Project.Controllers
         [HttpPost]
         public IActionResult CreateFinal(FinalVM vm)
         {
-            var final = new FinalExam()
+            if (ModelState.IsValid)
             {
-                TotalMarks = vm.totalmarks,
-                Title = vm.Title,
-                Duration = vm.duration,
-                courseId = vm.courseid
-            };
-            context.FinalExams.Add(final);
-            context.SaveChanges();
-            return RedirectToAction("InsertQuestions", new { examtype = "final", examid = final.Id });
+                var final = new FinalExam()
+                {
+                    TotalMarks = vm.totalmarks,
+                    Title = vm.Title,
+                    Duration = vm.duration,
+                    courseId = vm.courseid,
+                    InstructorId = usermanager.GetUserId(User)
+                };
+                context.FinalExams.Add(final);
+                context.SaveChanges();
+                return RedirectToAction("InsertQuestions", new { examtype = "final", examid = final.Id });
+            }
+            return View(vm);
+           
+            
         }
 
 
