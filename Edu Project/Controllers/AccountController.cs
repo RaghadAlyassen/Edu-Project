@@ -84,7 +84,7 @@ namespace Edu_Project.Controllers
 
                 return RedirectToAction(
                     "Index",
-                    "StudentDashboard");
+                    "Home");
             }
 
             foreach (var error in result.Errors)
@@ -105,7 +105,7 @@ namespace Edu_Project.Controllers
             {
                 return RedirectToAction(
                     "Index",
-                    "StudentDashboard");
+                    "Home");
             }
 
             return View();
@@ -145,26 +145,17 @@ namespace Edu_Project.Controllers
                     rememberMe,
                     false);
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                if (await userManager.IsInRoleAsync(
-                    user,
-                    "Student"))
-                {
-                    return RedirectToAction(
-                        "Index",
-                        "StudentDashboard");
-                }
+                ViewBag.ErrorMessage =
+                    "Invalid email or password.";
 
-                return RedirectToAction(
-                    "Index",
-                    "Home");
+                return View();
             }
 
-            ViewBag.ErrorMessage =
-                "Invalid email or password.";
-
-            return View();
+            return RedirectToAction(
+                "Index",
+                "Home");
         }
 
         [HttpPost]

@@ -2,31 +2,77 @@
     ViewData["Title"] = "Access Denied";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
+<section class="edu-page-section">
 
-            <div class="card shadow text-center">
-                <div class="card-body p-5">
+    <div class="container">
 
-                    <h2 class="text-danger mb-3">
+        <div class="row justify-content-center">
+
+            <div class="col-xl-7 col-lg-8">
+
+                <div class="access-denied-card">
+
+                    <div class="access-denied-icon">
+                        !
+                    </div>
+
+                    <span class="dashboard-panel-label">
+                        Access Restricted
+                    </span>
+
+                    <h1>
                         Access Denied
-                    </h2>
+                    </h1>
 
                     <p>
-                        You do not have permission
-                        to access this page.
+                        You do not have permission to access this page.
+                        Please return to your dashboard or go back to the home page.
                     </p>
 
-                    <a asp-controller="Home"
-                       asp-action="Index"
-                       class="btn btn-primary">
-                        Back to Home
-                    </a>
+                    <div class="access-denied-actions">
+
+                        @if (User.Identity != null &&
+                             User.Identity.IsAuthenticated)
+                        {
+                            @if (User.IsInRole("Student"))
+                            {
+                                <a asp-controller="StudentDashboard"
+                                   asp-action="Index"
+                                   class="btn edu-btn-primary">
+
+                                    Back to Dashboard
+
+                                </a>
+                            }
+                            else if (User.IsInRole("Instructor") ||
+                                     User.IsInRole("Admin"))
+                            {
+                                <a asp-controller="Instructor"
+                                   asp-action="Index"
+                                   class="btn edu-btn-primary">
+
+                                    Back to Dashboard
+
+                                </a>
+                            }
+                        }
+
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="btn edu-btn-outline">
+
+                            Home
+
+                        </a>
+
+                    </div>
 
                 </div>
+
             </div>
 
         </div>
+
     </div>
-</div>
+
+</section>

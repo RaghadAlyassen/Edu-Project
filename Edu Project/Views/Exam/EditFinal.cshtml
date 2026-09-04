@@ -1,30 +1,348 @@
-﻿@model FinalExam
+﻿@model Edu_Project.Models.FinalExam
 
-<form asp-action="EditFinal" method="post">
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="courseId" />
+@{
+    ViewData["Title"] = "Edit Final Exam";
+}
 
-    <label>Title</label>
-    <input asp-for="Title" /><br />
+<section class="edu-page-section">
 
-    <label>Total Marks</label>
-    <input asp-for="TotalMarks" /><br />
+    <div class="container">
 
-    <label>Duration</label>
-    <input asp-for="Duration" /><br />
+        <div class="edu-page-header">
 
-    <h3>Questions</h3>
-    @for (int qi = 0; qi < Model.Question.Count; qi++)
-    {
-        <input type="text" name="Question[@qi].Text" value="@Model.Question.ToList()[qi].Text" /><br />
+            <span class="edu-hero-badge">
+                Final Exam
+            </span>
 
-        @for (int aj = 0; aj < Model.Question.ToList()[qi].Answers.Count; aj++)
-        {
-            <input type="text" name="Question[@qi].Answers[@aj].Text" value="@Model.Question.ToList()[qi].Answers.ToList()[aj].Text" />
-            @(Model.Question.ToList()[qi].Answers.ToList()[aj].IsCorrect ? "(Correct)" : "")
-            <br />
-        }
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Edit Final Exam
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Update the final exam information and review its questions and answers.
+                    </p>
+
+                </div>
+
+                <a asp-action="FinalDetails"
+                   asp-route-id="@Model.courseId"
+                   class="btn edu-btn-outline">
+
+                    Back to Final Exam
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <form asp-action="EditFinal"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   asp-for="Id" />
+
+            <input type="hidden"
+                   asp-for="courseId" />
+
+            <div class="row g-4">
+
+                <div class="col-xl-4">
+
+                    <div class="quiz-edit-info-card">
+
+                        <span class="dashboard-panel-label">
+                            Exam Information
+                        </span>
+
+                        <h2>
+                            Basic Details
+                        </h2>
+
+                        <p>
+                            Update the exam title, total marks and duration.
+                        </p>
+
+                        <div asp-validation-summary="All"
+                             class="alert alert-danger">
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="Title"
+                                   class="form-label">
+                                Final Exam Title
+                            </label>
+
+                            <input asp-for="Title"
+                                   class="form-control"
+                                   placeholder="Final exam title"
+                                   required />
+
+                            <span asp-validation-for="Title"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="TotalMarks"
+                                   class="form-label">
+                                Total Marks
+                            </label>
+
+                            <input asp-for="TotalMarks"
+                                   type="number"
+                                   min="1"
+                                   class="form-control"
+                                   required />
+
+                            <span asp-validation-for="TotalMarks"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="Duration"
+                                   class="form-label">
+                                Duration
+                            </label>
+
+                            <div class="input-group">
+
+                                <input asp-for="Duration"
+                                       type="number"
+                                       min="1"
+                                       class="form-control"
+                                       required />
+
+                                <span class="input-group-text">
+                                    minutes
+                                </span>
+
+                            </div>
+
+                            <span asp-validation-for="Duration"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn edu-btn-primary w-100">
+
+                            Save Final Exam Changes
+                            <span class="ms-1">
+                                →
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="col-xl-8">
+
+                    <div class="quiz-edit-questions-card">
+
+                        <div class="quiz-edit-section-header">
+
+                            <div>
+
+                                <span class="dashboard-panel-label">
+                                    Exam Content
+                                </span>
+
+                                <h2>
+                                    Questions
+                                </h2>
+
+                                <p>
+                                    Review and edit the questions and answer text.
+                                </p>
+
+                            </div>
+
+                            <span class="quiz-question-count">
+                                @(Model.Question?.Count ?? 0)
+                                Question@(Model.Question?.Count == 1 ? "" : "s")
+                            </span>
+
+                        </div>
+
+                        @if (Model.Question != null &&
+                             Model.Question.Any())
+                        {
+                            var questions =
+                                Model.Question.ToList();
+
+                            <div class="quiz-edit-question-list">
+
+                                @for (int i = 0;
+                                      i < questions.Count;
+                                      i++)
+                                {
+                                    var question =
+                                        questions[i];
+
+                                    var answers =
+                                        question.Answers?
+                                            .ToList()
+                                        ?? new List<Edu_Project.Models.Answer>();
+
+                                    <div class="quiz-edit-question">
+
+                                        <div class="quiz-edit-question-header">
+
+                                            <div class="quiz-question-number">
+                                                @(i + 1)
+                                            </div>
+
+                                            <div>
+
+                                                <span class="quiz-question-label">
+                                                    Question @(i + 1)
+                                                </span>
+
+                                                <strong>
+                                                    Edit Question
+                                                </strong>
+
+                                            </div>
+
+                                        </div>
+
+                                        <input type="hidden"
+                                               name="Question[@i].Id"
+                                               value="@question.Id" />
+
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Question Text
+                                            </label>
+
+                                            <input type="text"
+                                                   name="Question[@i].Text"
+                                                   value="@question.Text"
+                                                   class="form-control"
+                                                   required />
+
+                                        </div>
+
+                                        <div class="quiz-edit-answer-grid">
+
+                                            @for (int j = 0;
+                                                  j < answers.Count;
+                                                  j++)
+                                            {
+                                                var answer =
+                                                    answers[j];
+
+                                                <div class="quiz-edit-answer @(answer.IsCorrect ? "correct" : "")">
+
+                                                    <input type="hidden"
+                                                           name="Question[@i].Answers[@j].Id"
+                                                           value="@answer.Id" />
+
+                                                    <input type="hidden"
+                                                           name="Question[@i].Answers[@j].IsCorrect"
+                                                           value="@answer.IsCorrect.ToString().ToLower()" />
+
+                                                    <div class="quiz-edit-answer-top">
+
+                                                        <span class="quiz-answer-letter">
+
+                                                            @if (j == 0)
+                                                            {
+                                                                <span>A</span>
+                                                            }
+                                                            else if (j == 1)
+                                                            {
+                                                                <span>B</span>
+                                                            }
+                                                            else if (j == 2)
+                                                            {
+                                                                <span>C</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>D</span>
+                                                            }
+
+                                                        </span>
+
+                                                        @if (answer.IsCorrect)
+                                                        {
+                                                            <span class="quiz-correct-badge">
+                                                                Correct
+                                                            </span>
+                                                        }
+
+                                                    </div>
+
+                                                    <input type="text"
+                                                           name="Question[@i].Answers[@j].Text"
+                                                           value="@answer.Text"
+                                                           class="form-control"
+                                                           required />
+
+                                                </div>
+                                            }
+
+                                        </div>
+
+                                    </div>
+                                }
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="dashboard-empty-state">
+
+                                <div class="dashboard-empty-icon">
+                                    F
+                                </div>
+
+                                <h4>
+                                    No questions found
+                                </h4>
+
+                                <p>
+                                    There are no questions available for this final exam.
+                                </p>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
     }
 
-    <button type="submit">Save</button>
-</form>
+}

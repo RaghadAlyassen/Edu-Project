@@ -1,283 +1,757 @@
-﻿using AspNetCoreGeneratedDocument;
-using Edu_Project.Data;
+﻿using Edu_Project.Data;
 using Edu_Project.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Edu_Project.Controllers
 {
+    [Authorize(Roles = "Instructor")]
     public class ExamController : Controller
     {
-        Context context;
-        UserManager<User> usermanager;
+        private readonly Context context;
+        private readonly UserManager<User> userManager;
+
+        public ExamController(
+            Context context,
+            UserManager<User> userManager)
+        {
+            this.context = context;
+            this.userManager = userManager;
+        }
+
         [HttpGet]
         public IActionResult CreateQuiz(int lid)
         {
-            var vm = new QuizVM()
+            var vm = new QuizVM
             {
-                lessonid = lid
+                lessonid = lid,
+                numberOfQuestions = 5
             };
 
             return View(vm);
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CreateQuiz(QuizVM vm)
         {
-           if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var quiz = new Quiz()
-                {
-                    Title = vm.Title,
-                    Duration = vm.duration,
-                    TotalMarks = vm.totalmarks,
-                    LessonId = vm.lessonid,
-                    InstructorId = usermanager.GetUserId(User)
-                };
-                context.Quizzes.Add(quiz);
-                context.SaveChanges();
-                return RedirectToAction("InsertQuestions", new { examtype = "quiz", examid = quiz.Id });
+                return View(vm);
             }
-           return View(vm);
-        }
 
+            var instructorId =
+                userManager.GetUserId(User);
+
+            if (instructorId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            var lesson =
+                context.Lessons
+                    .FirstOrDefault(
+                        l => l.Id == vm.lessonid);
+
+            if (lesson == null)
+            {
+                return NotFound();
+            }
+
+            if (lesson.InstructorId != instructorId)
+            {
+                return Forbid();
+            }
+
+            var existingQuiz =
+                context.Quizzes
+                    .FirstOrDefault(
+                        q => q.LessonId == vm.lessonid);
+
+            if (existingQuiz != null)
+            {
+                return RedirectToAction(
+                    nameof(QuizDetails),
+                    new
+                    {
+                        id = vm.lessonid
+                    });
+            }
+
+            var quiz = new Quiz
+            {
+                Title = vm.Title,
+                Duration = vm.duration,
+                TotalMarks = vm.totalmarks,
+                LessonId = vm.lessonid,
+                InstructorId = instructorId
+            };
+
+            context.Quizzes.Add(quiz);
+
+            context.SaveChanges();
+
+            return RedirectToAction(
+                nameof(InsertQuestions),
+                new
+                {
+                    examtype = "quiz",
+                    examid = quiz.Id,
+                    count = vm.numberOfQuestions
+                });
+        }
 
         [HttpGet]
         public IActionResult CreateFinal(int cid)
         {
-            var vm = new FinalVM()
+            var vm = new FinalVM
             {
-                courseid = cid
+                courseid = cid,
+                numberOfQuestions = 10
             };
+
             return View(vm);
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CreateFinal(FinalVM vm)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var final = new FinalExam()
-                {
-                    TotalMarks = vm.totalmarks,
-                    Title = vm.Title,
-                    Duration = vm.duration,
-                    courseId = vm.courseid,
-                    InstructorId = usermanager.GetUserId(User)
-                };
-                context.FinalExams.Add(final);
-                context.SaveChanges();
-                return RedirectToAction("InsertQuestions", new { examtype = "final", examid = final.Id });
+                return View(vm);
             }
-            return View(vm);
-           
-            
+
+            var instructorId =
+                userManager.GetUserId(User);
+
+            if (instructorId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            var course =
+                context.Courses
+                    .FirstOrDefault(
+                        c => c.Id == vm.courseid);
+
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            if (course.InstructorId != instructorId)
+            {
+                return Forbid();
+            }
+
+            var existingFinal =
+                context.FinalExams
+                    .FirstOrDefault(
+                        f => f.courseId == vm.courseid);
+
+            if (existingFinal != null)
+            {
+                return RedirectToAction(
+                    nameof(FinalDetails),
+                    new
+                    {
+                        id = vm.courseid
+                    });
+            }
+
+            var finalExam = new FinalExam
+            {
+                Title = vm.Title,
+                Duration = vm.duration,
+                TotalMarks = vm.totalmarks,
+                courseId = vm.courseid,
+                InstructorId = instructorId
+            };
+
+            context.FinalExams.Add(finalExam);
+
+            context.SaveChanges();
+
+            return RedirectToAction(
+                nameof(InsertQuestions),
+                new
+                {
+                    examtype = "final",
+                    examid = finalExam.Id,
+                    count = vm.numberOfQuestions
+                });
         }
 
-
         [HttpGet]
-        public IActionResult InsertQuestions(string examtype, int examid)
+        public IActionResult InsertQuestions(
+            string examtype,
+            int examid,
+            int count = 1)
         {
+            if (examtype != "quiz" &&
+                examtype != "final")
+            {
+                return NotFound();
+            }
+
+            var instructorId =
+                userManager.GetUserId(User);
+
+            if (instructorId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            if (examtype == "quiz")
+            {
+                var quiz =
+                    context.Quizzes
+                        .FirstOrDefault(
+                            q => q.Id == examid);
+
+                if (quiz == null)
+                {
+                    return NotFound();
+                }
+
+                if (quiz.InstructorId != instructorId)
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                var finalExam =
+                    context.FinalExams
+                        .FirstOrDefault(
+                            f => f.Id == examid);
+
+                if (finalExam == null)
+                {
+                    return NotFound();
+                }
+
+                if (finalExam.InstructorId != instructorId)
+                {
+                    return Forbid();
+                }
+            }
+
+            if (count < 1)
+            {
+                count = 1;
+            }
+
+            if (count > 50)
+            {
+                count = 50;
+            }
 
             ViewBag.Examtype = examtype;
             ViewBag.examid = examid;
+            ViewBag.QuestionCount = count;
+
             return View();
         }
+
         [HttpPost]
-        public IActionResult InsertQuestions(List<QuestionVM> models, string examtype, int examid)
+        [ValidateAntiForgeryToken]
+        public IActionResult InsertQuestions(
+            List<QuestionVM> models,
+            string examtype,
+            int examid)
         {
-            foreach (var i in models)
+            if (examtype != "quiz" &&
+                examtype != "final")
             {
-                var ques = new Question()
+                return NotFound();
+            }
+
+            var instructorId =
+                userManager.GetUserId(User);
+
+            if (instructorId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            if (examtype == "quiz")
+            {
+                var quizOwner =
+                    context.Quizzes
+                        .FirstOrDefault(
+                            q => q.Id == examid);
+
+                if (quizOwner == null)
                 {
-                    Text = i.text,
+                    return NotFound();
+                }
+
+                if (quizOwner.InstructorId != instructorId)
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                var finalOwner =
+                    context.FinalExams
+                        .FirstOrDefault(
+                            f => f.Id == examid);
+
+                if (finalOwner == null)
+                {
+                    return NotFound();
+                }
+
+                if (finalOwner.InstructorId != instructorId)
+                {
+                    return Forbid();
+                }
+            }
+
+            if (models == null ||
+                models.Count == 0)
+            {
+                ViewBag.Examtype = examtype;
+                ViewBag.examid = examid;
+                ViewBag.QuestionCount = 1;
+
+                ModelState.AddModelError(
+                    "",
+                    "Please add at least one question.");
+
+                return View(models);
+            }
+
+            foreach (var item in models)
+            {
+                if (string.IsNullOrWhiteSpace(item.text))
+                {
+                    continue;
+                }
+
+                if (item.answers == null ||
+                    item.answers.Count < 4)
+                {
+                    continue;
+                }
+
+                if (item.correct < 1 ||
+                    item.correct > 4)
+                {
+                    continue;
+                }
+
+                var question = new Question
+                {
+                    Text = item.text,
                     Answers = new List<Answer>()
                 };
+
                 if (examtype == "final")
                 {
-                    ques.FinalexamId = examid;
+                    question.FinalexamId =
+                        examid;
                 }
                 else
                 {
-                    ques.QuizId = examid;
+                    question.QuizId =
+                        examid;
                 }
-                context.Questions.Add(ques);
 
-                for (int j = 0; j < 4; j++)
+                context.Questions.Add(question);
+
+                for (var j = 0; j < 4; j++)
                 {
-                    ques.Answers.Add(new Answer
-                    {
-                        Text = i.answers[j],
-                        IsCorrect = (j + 1) == i.correct,
-                        Question = ques
-                    });
+                    question.Answers.Add(
+                        new Answer
+                        {
+                            Text = item.answers[j],
+                            IsCorrect =
+                                j + 1 == item.correct,
+                            Question = question
+                        });
                 }
             }
+
             context.SaveChanges();
+
             if (examtype == "final")
             {
-                var final = context.FinalExams.FirstOrDefault(f => f.Id == examid);
-                return RedirectToAction("Details", "Course", new { Id = final.courseId });
+                var finalExam =
+                    context.FinalExams
+                        .FirstOrDefault(
+                            f => f.Id == examid);
+
+                if (finalExam == null)
+                {
+                    return NotFound();
+                }
+
+                return RedirectToAction(
+                    nameof(FinalDetails),
+                    new
+                    {
+                        id = finalExam.courseId
+                    });
             }
-            else if (examtype == "quiz")
-            {
-                var quiz = context.Quizzes.FirstOrDefault(q => q.Id==examid);
-                return RedirectToAction("LessonDetailsForInstructor", "Leson", new { id = quiz.LessonId });
-            }
-            else
+
+            var quiz =
+                context.Quizzes
+                    .Include(q => q.Lesson)
+                    .FirstOrDefault(
+                        q => q.Id == examid);
+
+            if (quiz == null ||
+                quiz.Lesson == null)
             {
                 return NotFound();
             }
-        }
-        
-        [HttpGet]
-        public IActionResult TakeQuiz(int lessonid)
-        {
-            var studentid = usermanager.GetUserId(User);
-            var quiz = context.Quizzes.FirstOrDefault(q => q.LessonId == lessonid);
-            var watched = context.LessonsWatch.Any(lw => lw.StudentId == studentid && lw.LessonId == quiz.LessonId && lw.Seen == true);
-            if (!watched)
-            {
-                return Content("you can not enter this quiz before seenig the lesson");
-            }
-            else
-            {
-                return View(quiz);
-            }
-        }
-        [HttpPost]
-        public IActionResult TakeQuiz(int quizid, List<int> answers)
-        {
-            var studentid = usermanager.GetUserId(User);
-            var quiz = context.Quizzes.FirstOrDefault(q => q.Id == quizid);
-            int grade = 0;
-            for (int i = 0; i < quiz.Questions.Count; i++)
-            {
-                var selectedAnswerId = answers[i];
-                var correctAnswer = quiz.Questions.ToList()[i].Answers.FirstOrDefault(a => a.IsCorrect);
 
-                if (correctAnswer != null && correctAnswer.Id == selectedAnswerId)
+            return RedirectToAction(
+                nameof(QuizDetails),
+                new
                 {
-                    grade++;
-                }
-            }
-
-            var grd = new QuizGrade
-            {
-                quizId = quizid,
-                StudentId = studentid,
-                Grade = grade,
-            };
-
-            context.Quizgrades.Add(grd);
-            context.SaveChanges();
-            return RedirectToAction("Result", "Quiz", new {quizId=grd.quizId});
+                    id = quiz.LessonId
+                });
         }
-
 
         [HttpGet]
-        public IActionResult TakeFinal(int courseid)
-        {
-            var final = context.FinalExams.FirstOrDefault(f => f.courseId == courseid);
-            var studentid = usermanager.GetUserId(User);
-            var lessons=context.Lessons.Where(l => l.CourseId==courseid).ToList();
-            var watched = context.LessonsWatch.Where(lw => lw.StudentId == studentid && lw.Seen == true && lessons.Select(l => l.Id).Contains(lw.LessonId)).Select(lw=> lw.LessonId).ToList();
-            bool allseen = lessons.All(l => watched.Contains(l.Id));
-            if (!allseen)
-            {
-                return Content("you can not enter this exam before seenig all lessons in this course");
-            }
-            else
-            {
-                return View(final);
-            }
-        }
-        [HttpPost]
-        public IActionResult TakeFinal(int finalid,List<int> answers)
-        {
-            var studentid = usermanager.GetUserId(User);
-            var final = context.FinalExams.FirstOrDefault(q => q.Id == finalid);
-            int grade = 0;
-            for (int i = 0; i < final.Question.Count; i++)
-            {
-                var selectedAnswerId = answers[i];
-                var correctAnswer = final.Question.ToList()[i].Answers.FirstOrDefault(a => a.IsCorrect);
-
-                if (correctAnswer != null && correctAnswer.Id == selectedAnswerId)
-                {
-                    grade++;
-                }
-            }
-            var grd = new FinalGrade()
-            {
-                StudentId = studentid,
-                FinalexamId = finalid,
-                Grade = grade,
-            };
-            context.Finalgrades.Add(grd);
-            context.SaveChanges();
-            return RedirectToAction("Result", "FinalExam", new {finalExamId=grd.FinalexamId});
-        }
         public IActionResult QuizDetails(int id)
         {
-            var quiz = context.Quizzes.FirstOrDefault(q => q.LessonId == id);
-            if (quiz != null)
+            var instructorId =
+                userManager.GetUserId(User);
+
+            var quiz =
+                context.Quizzes
+                    .Include(q => q.Lesson)
+                    .Include(q => q.Questions)
+                        .ThenInclude(q => q.Answers)
+                    .FirstOrDefault(
+                        q => q.LessonId == id);
+
+            if (quiz == null)
             {
-                return View(quiz);
+                var lesson =
+                    context.Lessons
+                        .FirstOrDefault(
+                            l => l.Id == id);
+
+                if (lesson == null)
+                {
+                    return NotFound();
+                }
+
+                if (lesson.InstructorId != instructorId)
+                {
+                    return Forbid();
+                }
+
+                return RedirectToAction(
+                    nameof(CreateQuiz),
+                    new
+                    {
+                        lid = id
+                    });
             }
-            else
+
+            if (quiz.InstructorId != instructorId)
             {
-                return NotFound();
+                return Forbid();
             }
-           
+
+            return View(quiz);
         }
+
         [HttpGet]
         public IActionResult EditQuiz(int id)
         {
-            var quiz = context.Quizzes.FirstOrDefault(q => q.Id==id);
-            return View(quiz);
-        }
-        [HttpPost]
-        public IActionResult EditQuiz(Quiz quiz)
-        {
-            if (ModelState.IsValid)
-            {
-                context.Quizzes.Update(quiz);
-                context.SaveChanges();
-                return RedirectToAction("QuizDetails", new { id = quiz.Id });
-            }
-            return View(quiz);
-        }
-        public IActionResult FinalDetails(int id)
-        {
-            var final = context.FinalExams.FirstOrDefault(q => q.courseId == id);
-            if (final != null)
-            {
-                return View(final);
-            }
-            else
+            var quiz =
+                context.Quizzes
+                    .Include(q => q.Questions)
+                        .ThenInclude(q => q.Answers)
+                    .FirstOrDefault(
+                        q => q.Id == id);
+
+            if (quiz == null)
             {
                 return NotFound();
             }
+
+            var instructorId =
+                userManager.GetUserId(User);
+
+            if (quiz.InstructorId != instructorId)
+            {
+                return Forbid();
+            }
+
+            return View(quiz);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditQuiz(Quiz quiz)
+        {
+            var instructorId =
+                userManager.GetUserId(User);
+
+            var quizInDb =
+                context.Quizzes
+                    .Include(q => q.Questions)
+                        .ThenInclude(q => q.Answers)
+                    .FirstOrDefault(
+                        q => q.Id == quiz.Id);
+
+            if (quizInDb == null)
+            {
+                return NotFound();
+            }
+
+            if (quizInDb.InstructorId != instructorId)
+            {
+                return Forbid();
+            }
+
+            quizInDb.Title =
+                quiz.Title;
+
+            quizInDb.Duration =
+                quiz.Duration;
+
+            quizInDb.TotalMarks =
+                quiz.TotalMarks;
+
+            if (quiz.Questions != null)
+            {
+                foreach (var postedQuestion
+                         in quiz.Questions)
+                {
+                    var questionInDb =
+                        quizInDb.Questions?
+                            .FirstOrDefault(
+                                q =>
+                                    q.Id ==
+                                    postedQuestion.Id);
+
+                    if (questionInDb == null)
+                    {
+                        continue;
+                    }
+
+                    questionInDb.Text =
+                        postedQuestion.Text;
+
+                    if (postedQuestion.Answers != null)
+                    {
+                        foreach (var postedAnswer
+                                 in postedQuestion.Answers)
+                        {
+                            var answerInDb =
+                                questionInDb.Answers?
+                                    .FirstOrDefault(
+                                        a =>
+                                            a.Id ==
+                                            postedAnswer.Id);
+
+                            if (answerInDb == null)
+                            {
+                                continue;
+                            }
+
+                            answerInDb.Text =
+                                postedAnswer.Text;
+
+                            answerInDb.IsCorrect =
+                                postedAnswer.IsCorrect;
+                        }
+                    }
+                }
+            }
+
+            context.SaveChanges();
+
+            return RedirectToAction(
+                nameof(QuizDetails),
+                new
+                {
+                    id = quizInDb.LessonId
+                });
+        }
+
+        [HttpGet]
+        public IActionResult FinalDetails(int id)
+        {
+            var instructorId =
+                userManager.GetUserId(User);
+
+            var finalExam =
+                context.FinalExams
+                    .Include(f => f.Question)
+                        .ThenInclude(q => q.Answers)
+                    .FirstOrDefault(
+                        f => f.courseId == id);
+
+            if (finalExam == null)
+            {
+                var course =
+                    context.Courses
+                        .FirstOrDefault(
+                            c => c.Id == id);
+
+                if (course == null)
+                {
+                    return NotFound();
+                }
+
+                if (course.InstructorId != instructorId)
+                {
+                    return Forbid();
+                }
+
+                return RedirectToAction(
+                    nameof(CreateFinal),
+                    new
+                    {
+                        cid = id
+                    });
+            }
+
+            if (finalExam.InstructorId != instructorId)
+            {
+                return Forbid();
+            }
+
+            return View(finalExam);
+        }
+
         [HttpGet]
         public IActionResult EditFinal(int id)
         {
-            var final = context.FinalExams.FirstOrDefault(f => f.Id == id);
-            return View(final);
+            var finalExam =
+                context.FinalExams
+                    .Include(f => f.Question)
+                        .ThenInclude(q => q.Answers)
+                    .FirstOrDefault(
+                        f => f.Id == id);
+
+            if (finalExam == null)
+            {
+                return NotFound();
+            }
+
+            var instructorId =
+                userManager.GetUserId(User);
+
+            if (finalExam.InstructorId != instructorId)
+            {
+                return Forbid();
+            }
+
+            return View(finalExam);
         }
+
         [HttpPost]
-        public IActionResult EditFinal(FinalExam final)
+        [ValidateAntiForgeryToken]
+        public IActionResult EditFinal(
+            FinalExam finalExam)
         {
-            if (ModelState.IsValid)
+            var instructorId =
+                userManager.GetUserId(User);
+
+            var finalInDb =
+                context.FinalExams
+                    .Include(f => f.Question)
+                        .ThenInclude(q => q.Answers)
+                    .FirstOrDefault(
+                        f => f.Id == finalExam.Id);
+
+            if (finalInDb == null)
             {
-                context.FinalExams.Update(final);
-                context .SaveChanges();
-                return RedirectToAction("FinalDetails", new {id =final.courseId});
+                return NotFound();
             }
-            else
+
+            if (finalInDb.InstructorId != instructorId)
             {
-                return View(final);
+                return Forbid();
             }
+
+            finalInDb.Title =
+                finalExam.Title;
+
+            finalInDb.Duration =
+                finalExam.Duration;
+
+            finalInDb.TotalMarks =
+                finalExam.TotalMarks;
+
+            if (finalExam.Question != null)
+            {
+                foreach (var postedQuestion
+                         in finalExam.Question)
+                {
+                    var questionInDb =
+                        finalInDb.Question?
+                            .FirstOrDefault(
+                                q =>
+                                    q.Id ==
+                                    postedQuestion.Id);
+
+                    if (questionInDb == null)
+                    {
+                        continue;
+                    }
+
+                    questionInDb.Text =
+                        postedQuestion.Text;
+
+                    if (postedQuestion.Answers != null)
+                    {
+                        foreach (var postedAnswer
+                                 in postedQuestion.Answers)
+                        {
+                            var answerInDb =
+                                questionInDb.Answers?
+                                    .FirstOrDefault(
+                                        a =>
+                                            a.Id ==
+                                            postedAnswer.Id);
+
+                            if (answerInDb == null)
+                            {
+                                continue;
+                            }
+
+                            answerInDb.Text =
+                                postedAnswer.Text;
+
+                            answerInDb.IsCorrect =
+                                postedAnswer.IsCorrect;
+                        }
+                    }
+                }
+            }
+
+            context.SaveChanges();
+
+            return RedirectToAction(
+                nameof(FinalDetails),
+                new
+                {
+                    id = finalInDb.courseId
+                });
         }
     }
 }

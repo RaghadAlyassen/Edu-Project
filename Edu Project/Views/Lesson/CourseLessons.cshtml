@@ -7,10 +7,13 @@
         ViewBag.WatchedLessonIds as List<int>
         ?? new List<int>();
 
-    var totalLessons = Model.Count();
+    var lessons = Model?.OrderBy(l => l.Order).ToList()
+        ?? new List<Edu_Project.Models.Lesson>();
+
+    var totalLessons = lessons.Count;
 
     var watchedLessons =
-        Model.Count(l =>
+        lessons.Count(l =>
             watchedLessonIds.Contains(l.Id));
 
     var progress =
@@ -20,202 +23,355 @@
               totalLessons;
 }
 
-<div class="container mt-4">
+<section class="edu-page-section">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="container">
 
-        <div>
-            <h2>Course Lessons</h2>
+        <div class="edu-page-header">
 
-            <p class="text-muted mb-0">
-                Watch lessons and track your progress.
-            </p>
-        </div>
+            <span class="edu-hero-badge">
+                Course Learning
+            </span>
 
-        <a asp-controller="Enrollment"
-           asp-action="MyCourses"
-           class="btn btn-outline-primary">
-            Back to My Courses
-        </a>
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
 
-    </div>
+                <div>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
-        </div>
-    }
+                    <h1 class="edu-page-title">
+                        Course Lessons
+                    </h1>
 
-    <div class="card shadow-sm mb-4">
+                    <p class="edu-page-subtitle mb-0">
+                        Watch lessons, complete quizzes and track your course progress.
+                    </p>
 
-        <div class="card-body">
+                </div>
 
-            <div class="d-flex justify-content-between">
+                <a asp-controller="Enrollment"
+                   asp-action="MyCourses"
+                   class="btn edu-btn-outline">
 
-                <strong>
-                    Course Progress
-                </strong>
+                    Back to My Courses
 
-                <span>
-                    @watchedLessons / @totalLessons Lessons
-                </span>
+                </a>
 
             </div>
 
-            <div class="progress mt-3"
-                 style="height: 25px;">
+        </div>
 
-                <div class="progress-bar"
-                     role="progressbar"
-                     style="width: @progress%;">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mb-4">
+                @TempData["SuccessMessage"]
+            </div>
+        }
 
+        <div class="student-course-progress-card">
+
+            <div class="student-course-progress-header">
+
+                <div>
+
+                    <span class="dashboard-panel-label">
+                        Course Progress
+                    </span>
+
+                    <h2>
+                        Your Learning Progress
+                    </h2>
+
+                    <p>
+                        Complete lessons to move toward finishing this course.
+                    </p>
+
+                </div>
+
+                <div class="student-progress-percentage">
                     @progress%
+                </div>
 
+            </div>
+
+            <div class="student-progress-details">
+
+                <div>
+
+                    <span>
+                        Completed Lessons
+                    </span>
+
+                    <strong>
+                        @watchedLessons of @totalLessons
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        Remaining
+                    </span>
+
+                    <strong>
+                        @(totalLessons - watchedLessons)
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div class="student-modern-progress">
+
+                <div class="student-modern-progress-bar"
+                     style="width: @progress%;">
                 </div>
 
             </div>
 
         </div>
 
-    </div>
-
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">
-            No lessons are available for this course.
-        </div>
-    }
-    else
-    {
-        @foreach (var lesson in Model)
+        @if (!lessons.Any())
         {
-            var watched =
-                watchedLessonIds.Contains(
-                    lesson.Id);
+            <div class="dashboard-panel mt-4">
 
-            <div class="card shadow-sm mb-4">
+                <div class="dashboard-empty-state">
 
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-start">
-
-                        <div>
-
-                            <h4>
-                                Lesson @lesson.Order:
-                                @lesson.Title
-                            </h4>
-
-                            <p class="text-muted">
-                                @lesson.Description
-                            </p>
-
-                            @if (lesson.Instructor != null)
-                            {
-                                <p>
-                                    <strong>
-                                        Instructor:
-                                    </strong>
-
-                                    @lesson.Instructor.UserName
-                                </p>
-                            }
-
-                        </div>
-
-                        @if (watched)
-                        {
-                            <span class="badge bg-success">
-                                Watched
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">
-                                Not Watched
-                            </span>
-                        }
-
+                    <div class="dashboard-empty-icon">
+                        L
                     </div>
 
-                    <hr />
+                    <h4>
+                        No lessons available
+                    </h4>
 
-                    <div class="d-flex gap-2 flex-wrap">
-
-                        @if (!string.IsNullOrWhiteSpace(
-                            lesson.VideoURL))
-                        {
-                            <a href="@lesson.VideoURL"
-                               target="_blank"
-                               class="btn btn-primary">
-
-                                Watch Lesson
-
-                            </a>
-                        }
-
-                        @if (!watched)
-                        {
-                            <form asp-controller="Lesson"
-                                  asp-action="MarkAsWatched"
-                                  method="post">
-
-                                @Html.AntiForgeryToken()
-
-                                <input type="hidden"
-                                       name="lessonId"
-                                       value="@lesson.Id" />
-
-                                <button type="submit"
-                                        class="btn btn-success">
-
-                                    Mark as Watched
-
-                                </button>
-
-                            </form>
-                        }
-                        else
-                        {
-                            <form asp-controller="Lesson"
-                                  asp-action="MarkAsNotWatched"
-                                  method="post">
-
-                                @Html.AntiForgeryToken()
-
-                                <input type="hidden"
-                                       name="lessonId"
-                                       value="@lesson.Id" />
-
-                                <button type="submit"
-                                        class="btn btn-outline-secondary">
-
-                                    Mark as Not Watched
-
-                                </button>
-
-                            </form>
-                        }
-
-                        @if (lesson.quiz != null)
-                        {
-                            <a asp-controller="Quiz"
-                               asp-action="Take"
-                               asp-route-quizId="@lesson.quiz.Id"
-                               class="btn btn-warning">
-
-                                Take Quiz
-
-                            </a>
-                        }
-
-                    </div>
+                    <p>
+                        This course does not have any lessons yet.
+                    </p>
 
                 </div>
 
             </div>
         }
-    }
+        else
+        {
+            <div class="student-lesson-list">
 
-</div>
+                @{
+                    var lessonNumber = 1;
+                }
+
+                @foreach (var lesson in lessons)
+                {
+                    var watched =
+                        watchedLessonIds.Contains(lesson.Id);
+
+                    <div class="student-lesson-card @(watched ? "completed" : "")">
+
+                        <div class="student-lesson-number">
+
+                            @if (watched)
+                            {
+                                <span>
+                                    ✓
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    @lessonNumber
+                                </span>
+                            }
+
+                        </div>
+
+                        <div class="student-lesson-content">
+
+                            <div class="student-lesson-header">
+
+                                <div>
+
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+
+                                        <span class="lesson-card-label">
+                                            Lesson @lesson.Order
+                                        </span>
+
+                                        @if (watched)
+                                        {
+                                            <span class="student-lesson-status completed">
+                                                Watched
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="student-lesson-status">
+                                                Not Watched
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                    <h2>
+                                        @lesson.Title
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+                            <p class="student-lesson-description">
+
+                                @if (!string.IsNullOrWhiteSpace(lesson.Description))
+                                {
+                                    @lesson.Description
+                                }
+                                else
+                                {
+                                    <span>
+                                        No description available for this lesson.
+                                    </span>
+                                }
+
+                            </p>
+
+                            <div class="student-lesson-meta">
+
+                                <div>
+
+                                    <span>
+                                        Instructor
+                                    </span>
+
+                                    <strong>
+                                        @(lesson.Instructor?.UserName ?? "N/A")
+                                    </strong>
+
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        Lesson Order
+                                    </span>
+
+                                    <strong>
+                                        @lesson.Order
+                                    </strong>
+
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        Quiz
+                                    </span>
+
+                                    <strong>
+                                        @(lesson.quiz != null
+                                            ? "Available"
+                                            : "Not Available")
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                            <div class="student-lesson-actions">
+
+                                @if (!string.IsNullOrWhiteSpace(lesson.VideoURL))
+                                {
+                                    <a href="@lesson.VideoURL"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="btn edu-btn-primary">
+
+                                        Watch Lesson
+                                        <span class="ms-1">
+                                            ↗
+                                        </span>
+
+                                    </a>
+                                }
+
+                                @if (!watched)
+                                {
+                                    <form asp-controller="Lesson"
+                                          asp-action="MarkAsWatched"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="lessonId"
+                                               value="@lesson.Id" />
+
+                                        <button type="submit"
+                                                class="btn edu-btn-outline">
+
+                                            Mark as Watched
+
+                                        </button>
+
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Lesson"
+                                          asp-action="MarkAsNotWatched"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="lessonId"
+                                               value="@lesson.Id" />
+
+                                        <button type="submit"
+                                                class="btn edu-btn-outline">
+
+                                            Mark as Not Watched
+
+                                        </button>
+
+                                    </form>
+                                }
+
+                                @if (lesson.quiz != null)
+                                {
+                                    <a asp-controller="Quiz"
+                                       asp-action="Take"
+                                       asp-route-quizId="@lesson.quiz.Id"
+                                       class="btn student-quiz-button">
+
+                                        Take Quiz
+
+                                    </a>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    lessonNumber++;
+                }
+
+            </div>
+        }
+
+        <div class="mt-4">
+
+            <a asp-controller="Enrollment"
+               asp-action="MyCourses"
+               class="btn edu-btn-outline">
+
+                ← Back to My Courses
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>

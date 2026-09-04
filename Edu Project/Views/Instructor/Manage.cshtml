@@ -1,0 +1,214 @@
+﻿@model IEnumerable<Edu_Project.Models.Instructor>
+
+@{
+    ViewData["Title"] = "Instructors";
+}
+
+<section class="edu-page-section">
+
+    <div class="container">
+
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Administration
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Instructors
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Manage instructor accounts and review their specializations.
+                    </p>
+
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <a asp-action="Create"
+                       class="btn edu-btn-primary">
+
+                        Create Instructor →
+
+                    </a>
+
+                    <a asp-action="Index"
+                       class="btn edu-btn-outline">
+
+                        Back to Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row g-4">
+
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var instructor in Model)
+                {
+                    <div class="col-xl-6 col-lg-6">
+
+                        <div class="edu-course-card h-100">
+
+                            <div class="d-flex align-items-start gap-3 mb-4">
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                    instructor.ProfileImg))
+                                {
+                                    <img src="@instructor.ProfileImg"
+                                         alt="@instructor.UserName"
+                                         class="instructor-details-image" />
+                                }
+                                else
+                                {
+                                    <div class="instructor-details-image instructor-details-placeholder">
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            instructor.UserName))
+                                        {
+                                            @(instructor.UserName
+                                                .Substring(0, 1)
+                                                .ToUpper())
+                                        }
+                                        else
+                                        {
+                                            <span>I</span>
+                                        }
+
+                                    </div>
+                                }
+
+                                <div class="flex-grow-1 min-width-0">
+
+                                    <span class="dashboard-panel-label">
+                                        Instructor
+                                    </span>
+
+                                    <h3 class="mb-1 text-break">
+                                        @(instructor.UserName ?? "Instructor")
+                                    </h3>
+
+                                    <p class="mb-0 text-muted small text-break">
+                                        @(instructor.Specialization ??
+                                            "No specialization")
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="mb-4">
+
+                                <div class="instructor-manage-info-row">
+
+                                    <span>
+                                        Email
+                                    </span>
+
+                                    <strong>
+                                        @(instructor.Email ?? "N/A")
+                                    </strong>
+
+                                </div>
+
+                                <div class="instructor-manage-info-row">
+
+                                    <span>
+                                        Specialization
+                                    </span>
+
+                                    <strong>
+                                        @(instructor.Specialization ??
+                                            "Not specified")
+                                    </strong>
+
+                                </div>
+
+                                <div class="instructor-manage-info-row">
+
+                                    <span>
+                                        Courses
+                                    </span>
+
+                                    <strong>
+                                        @(instructor.courses?.Count ?? 0)
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                            <div class="instructor-manage-actions">
+
+                                <a asp-action="Details"
+                                   asp-route-id="@instructor.Id"
+                                   class="btn edu-btn-outline">
+
+                                    Details
+
+                                </a>
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@instructor.Id"
+                                   class="btn edu-btn-primary">
+
+                                    Edit
+
+                                </a>
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@instructor.Id"
+                                   class="btn btn-outline-danger">
+
+                                    Delete
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+
+                    <div class="lesson-form-card text-center">
+
+                        <h3>
+                            No instructors found
+                        </h3>
+
+                        <p class="text-muted">
+                            Create your first instructor account.
+                        </p>
+
+                        <a asp-action="Create"
+                           class="btn edu-btn-primary">
+
+                            Create Instructor
+
+                        </a>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</section>

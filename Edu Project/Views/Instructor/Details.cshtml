@@ -4,31 +4,180 @@
     ViewData["Title"] = "Instructor Details";
 }
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-info text-white">
-                    <h4 class="mb-0">Instructor Details</h4>
-                </div>
-                <div class="card-body text-center">
-                    @if (!string.IsNullOrEmpty(Model.ProfileImg))
-                    {
-                        <img src="@Model.ProfileImg" alt="Profile Image" class="rounded-circle mb-3 shadow" width="100" height="100" />
-                    }
-                    else
-                    {
-                        <div class="badge bg-secondary mb-3 p-3 rounded-circle">No Image</div>
-                    }
-                    <h3 class="fw-bold mb-3">@Model.UserName</h3>
+<section class="edu-page-section">
 
-                    <hr />
-                    <div class="d-flex justify-content-between mt-4">
-                        <a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
-                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-                    </div>
+    <div class="container">
+
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Instructor Details
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Instructor Profile
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Review instructor account information and specialization.
+                    </p>
+
                 </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <a asp-action="Edit"
+                       asp-route-id="@Model.Id"
+                       class="btn edu-btn-primary">
+
+                        Edit Instructor
+
+                    </a>
+
+                    <a asp-action="Index"
+                       class="btn edu-btn-outline">
+
+                        Back to Dashboard
+
+                    </a>
+
+                </div>
+
             </div>
+
         </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-xl-8">
+
+                <div class="instructor-details-card">
+
+                    <div class="instructor-details-profile">
+
+                        @if (!string.IsNullOrWhiteSpace(Model.ProfileImg))
+                        {
+                            <img src="@Model.ProfileImg"
+                                 alt="@Model.UserName"
+                                 class="instructor-details-image" />
+                        }
+                        else
+                        {
+                            <div class="instructor-details-image instructor-details-placeholder">
+
+                                @if (!string.IsNullOrWhiteSpace(Model.UserName))
+                                {
+                                    @(Model.UserName.Substring(0, 1).ToUpper())
+                                }
+                                else
+                                {
+                                    <span>I</span>
+                                }
+
+                            </div>
+                        }
+
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                Instructor
+                            </span>
+
+                            <h2>
+                                @(Model.UserName ?? "Instructor")
+                            </h2>
+
+                            <p>
+                                @(Model.Specialization ?? "No specialization available")
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="instructor-details-grid">
+
+                        <div class="instructor-details-item">
+
+                            <span>
+                                Email Address
+                            </span>
+
+                            <strong>
+                                @(Model.Email ?? "N/A")
+                            </strong>
+
+                        </div>
+
+                        <div class="instructor-details-item">
+
+                            <span>
+                                User Name
+                            </span>
+
+                            <strong>
+                                @(Model.UserName ?? "N/A")
+                            </strong>
+
+                        </div>
+
+                        <div class="instructor-details-item">
+
+                            <span>
+                                Specialization
+                            </span>
+
+                            <strong>
+                                @(string.IsNullOrWhiteSpace(Model.Specialization)
+                                    ? "Not specified"
+                                    : Model.Specialization)
+                            </strong>
+
+                        </div>
+
+                        <div class="instructor-details-item">
+
+                            <span>
+                                Account Role
+                            </span>
+
+                            <strong class="instructor-role-badge">
+                                Instructor
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="instructor-details-footer">
+
+                        <a asp-action="Index"
+                           class="btn edu-btn-outline">
+
+                            ← Back to Dashboard
+
+                        </a>
+
+                        <a asp-action="Edit"
+                           asp-route-id="@Model.Id"
+                           class="btn edu-btn-primary">
+
+                            Edit Instructor
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-</div>
+
+</section>

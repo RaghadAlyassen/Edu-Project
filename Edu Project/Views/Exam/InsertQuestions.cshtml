@@ -1,39 +1,335 @@
-﻿@model List<QuestionVM>
+﻿@model List<Edu_Project.Models.QuestionVM>
 
-<form asp-action="InsertQuestions" method="post">
-    <input type="hidden" name="examid" value="@ViewBag.examid" />
-    <input type="hidden" name="examtype" value="@ViewBag.examtype" />
+@{
+    ViewData["Title"] = "Add Questions";
 
-    <div id="questions-container">
-        
+    var examType =
+        ViewBag.Examtype as string ?? "";
+
+    var examId =
+        Convert.ToInt32(ViewBag.examid);
+
+    var questionCount =
+        ViewBag.QuestionCount == null
+            ? 1
+            : Convert.ToInt32(
+                ViewBag.QuestionCount);
+}
+
+<section class="edu-page-section">
+
+    <div class="container">
+
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Exam Builder
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Add Questions
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Add multiple-choice questions and select the correct answer for each one.
+                    </p>
+
+                </div>
+
+                <button type="button"
+                        class="btn edu-btn-outline"
+                        onclick="addQuestion()">
+
+                    + Add Question
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <form asp-action="InsertQuestions"
+              method="post"
+              id="questionsForm">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="examtype"
+                   value="@examType" />
+
+            <input type="hidden"
+                   name="examid"
+                   value="@examId" />
+
+            <div asp-validation-summary="All"
+                 class="alert alert-danger mb-4">
+            </div>
+
+            <div id="questionsContainer">
+            </div>
+
+            <div class="lesson-form-next mt-4">
+
+                <div>
+
+                    <span class="lesson-form-next-label">
+                        Finish
+                    </span>
+
+                    <strong>
+                        Save Exam Questions
+                    </strong>
+
+                    <p>
+                        Make sure every question has four answers and one correct answer.
+                    </p>
+
+                </div>
+
+                <button type="submit"
+                        class="btn edu-btn-primary">
+
+                    Save Questions
+                    <span class="ms-1">
+                        →
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
 
-    <button type="button" onclick="addQuestion()">Add Question</button>
-    <button type="submit">Save</button>
-</form>
+</section>
 
-<script>
-    let questionIndex = 0;
+@section Scripts {
 
-    function addQuestion() {
-        let container = document.getElementById("questions-container");
+    <script>
+        const initialQuestionCount = @questionCount;
 
-        let questionHtml = `
-            <div class="question-block">
-                <label>Question ${questionIndex + 1} :</label>
-                <input type="text" name="models[${questionIndex}].text" /><br/>
+        function createQuestionCard() {
+            const card = document.createElement("div");
 
-                ${[0,1,2,3].map(j => `
-                    <label>Answer ${j+1} :</label>
-                    <input type="text" name="models[${questionIndex}].answers[${j}]" /><br/>
-                `).join("")}
+            card.className = "exam-builder-question";
 
-                <label>Correct answer number :</label>
-                <input type="number" name="models[${questionIndex}].correct" />
-            </div>
-        `;
+            card.innerHTML = `
+                        <div class="exam-builder-question-header">
 
-        container.insertAdjacentHTML("beforeend", questionHtml);
-        questionIndex++;
-    }
-</script>
+                            <div>
+
+                                <span class="dashboard-panel-label question-number">
+                                    Question
+                                </span>
+
+                                <h3>
+                                    Multiple Choice Question
+                                </h3>
+
+                            </div>
+
+                            <button type="button"
+                                    class="btn btn-sm edu-btn-outline remove-question-button">
+                                Remove
+                            </button>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+                                Question
+                            </label>
+
+                            <input type="text"
+                                   class="form-control question-text"
+                                   placeholder="Enter the question..."
+                                   required />
+
+                        </div>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Answer A
+                                </label>
+
+                                <input type="text"
+                                       class="form-control answer-input"
+                                       data-answer-index="0"
+                                       required />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Answer B
+                                </label>
+
+                                <input type="text"
+                                       class="form-control answer-input"
+                                       data-answer-index="1"
+                                       required />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Answer C
+                                </label>
+
+                                <input type="text"
+                                       class="form-control answer-input"
+                                       data-answer-index="2"
+                                       required />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Answer D
+                                </label>
+
+                                <input type="text"
+                                       class="form-control answer-input"
+                                       data-answer-index="3"
+                                       required />
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Correct Answer
+                                </label>
+
+                                <select class="form-select correct-answer"
+                                        required>
+
+                                    <option value="1">
+                                        Answer A
+                                    </option>
+
+                                    <option value="2">
+                                        Answer B
+                                    </option>
+
+                                    <option value="3">
+                                        Answer C
+                                    </option>
+
+                                    <option value="4">
+                                        Answer D
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+                    `;
+
+            card
+                .querySelector(".remove-question-button")
+                .addEventListener(
+                    "click",
+                    function() {
+                        const container =
+                            document.getElementById(
+                                "questionsContainer");
+
+                        if (container.children.length <= 1) {
+                            return;
+                        }
+
+                        card.remove();
+
+                        reindexQuestions();
+                    });
+
+            return card;
+        }
+
+        function addQuestion() {
+            const container =
+                document.getElementById(
+                    "questionsContainer");
+
+            if (container.children.length >= 50) {
+                return;
+            }
+
+            container.appendChild(
+                createQuestionCard());
+
+            reindexQuestions();
+        }
+
+        function reindexQuestions() {
+            const cards =
+                document.querySelectorAll(
+                    ".exam-builder-question");
+
+            cards.forEach(
+                function(card, index) {
+
+                    card
+                        .querySelector(".question-number")
+                        .textContent =
+                        `Question ${index + 1}`;
+
+                    card
+                        .querySelector(".question-text")
+                        .name =
+                        `models[${index}].text`;
+
+                    const answers =
+                        card.querySelectorAll(
+                            ".answer-input");
+
+                    answers.forEach(
+                        function(answer) {
+
+                            const answerIndex =
+                                answer.getAttribute(
+                                    "data-answer-index");
+
+                            answer.name =
+                                `models[${index}].answers[${answerIndex}]`;
+                        });
+
+                    card
+                        .querySelector(".correct-answer")
+                        .name =
+                        `models[${index}].correct`;
+                });
+        }
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                for (
+                    let i = 0;
+                    i < initialQuestionCount;
+                    i++
+                ) {
+                    addQuestion();
+                }
+
+                reindexQuestions();
+            });
+    </script>
+
+}

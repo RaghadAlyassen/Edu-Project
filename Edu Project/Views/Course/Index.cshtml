@@ -1,39 +1,227 @@
 ﻿@model IEnumerable<Edu_Project.Models.Course>
 
 @{
-    ViewData["Title"] = "Courses List";
+    ViewData["Title"] = "Courses";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Courses Management</h2>
-        <a asp-action="Create" class="btn btn-primary">Create New Course</a>
+<section class="edu-page-section">
+
+    <div class="container">
+
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Course Management
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Courses
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Manage your courses, review their details and update course information.
+                    </p>
+
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <a asp-action="Create"
+                       class="btn edu-btn-primary">
+
+                        Create New Course
+                        <span class="ms-1">
+                            →
+                        </span>
+
+                    </a>
+
+                    <a asp-controller="Instructor"
+                       asp-action="Index"
+                       class="btn edu-btn-outline">
+
+                        Back to Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="row g-4">
+
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-6 col-xl-4">
+
+                        <div class="edu-course-card">
+
+                            <div class="course-card-top">
+
+                                <div class="course-card-icon">
+
+                                    @if (!string.IsNullOrWhiteSpace(item.Title))
+                                    {
+                                        @(item.Title.Substring(0, 1).ToUpper())
+                                    }
+                                    else
+                                    {
+                                        <span>C</span>
+                                    }
+
+                                </div>
+
+                                <span class="edu-course-category">
+                                    @(item.Category?.Name ?? "No Category")
+                                </span>
+
+                            </div>
+
+                            <div class="edu-course-body">
+
+                                <h3 class="edu-course-title">
+                                    @item.Title
+                                </h3>
+
+                                <p class="edu-course-description">
+
+                                    @if (!string.IsNullOrWhiteSpace(item.Descciption))
+                                    {
+                                        @item.Descciption
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            No description available for this course.
+                                        </span>
+                                    }
+
+                                </p>
+
+                                @if (item.Instructor != null)
+                                {
+                                    <div class="course-card-instructor">
+
+                                        <div class="course-card-instructor-avatar">
+
+                                            @if (!string.IsNullOrWhiteSpace(item.Instructor.UserName))
+                                            {
+                                                @(item.Instructor.UserName.Substring(0, 1).ToUpper())
+                                            }
+                                            else
+                                            {
+                                                <span>I</span>
+                                            }
+
+                                        </div>
+
+                                        <div>
+
+                                            <span class="course-card-instructor-label">
+                                                Instructor
+                                            </span>
+
+                                            <span class="course-card-instructor-name">
+                                                @(item.Instructor.UserName ?? "N/A")
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+                                }
+
+                                <div class="edu-course-footer">
+
+                                    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+
+                                        <div>
+
+                                            @if (item.Price > 0)
+                                            {
+                                                <span class="course-card-price">
+                                                    @item.Price EGP
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="course-card-free">
+                                                    Free
+                                                </span>
+                                            }
+
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+
+                                            <a asp-action="Details"
+                                               asp-route-id="@item.Id"
+                                               class="btn edu-btn-outline">
+
+                                                Details
+
+                                            </a>
+
+                                            <a asp-action="Edit"
+                                               asp-route-id="@item.Id"
+                                               class="btn edu-btn-primary">
+
+                                                Edit
+
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="dashboard-panel">
+
+                <div class="dashboard-empty-state">
+
+                    <div class="dashboard-empty-icon">
+                        C
+                    </div>
+
+                    <h4>
+                        No courses found
+                    </h4>
+
+                    <p>
+                        You have not created any courses yet.
+                    </p>
+
+                    <a asp-action="Create"
+                       class="btn edu-btn-primary">
+
+                        Create Your First Course
+
+                    </a>
+
+                </div>
+
+            </div>
+        }
+
     </div>
 
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th class="text-center">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Title</td>
-                    <td>@item.Descciption</td>
-                    <td>@(item.Category?.Name ?? "No Category")</td>
-                    <td class="text-center">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white">Details</a>
-                        <a asp-controller="Instructor" asp-action="Index" class="btn btn-primary">Back to Dashboard</a>
-                       
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+</section>

@@ -5,35 +5,187 @@
         ViewBag.Student as Edu_Project.Models.Student;
 }
 
-<div class="container mt-4">
+<section class="edu-page-section">
 
-    <div class="mb-4">
+    <div class="container">
 
-        <h2>
-            Student Dashboard
-        </h2>
+        <div class="edu-page-header">
 
-        <p class="text-muted">
-            Welcome,
-            @(student?.Email ?? "Student")
-        </p>
+            <span class="edu-hero-badge">
+                Student Portal
+            </span>
 
-    </div>
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
 
-    <div class="row mb-4">
+                <div>
 
-        <div class="col-md-3 mb-3">
+                    <h1 class="edu-page-title">
+                        Welcome Back
+                    </h1>
 
-            <div class="card shadow-sm h-100 text-center">
+                    <p class="edu-page-subtitle mb-0">
+                        Continue learning, track your progress and review your grades.
+                    </p>
 
-                <div class="card-body">
+                </div>
 
-                    <h3 class="text-primary">
-                        @ViewBag.EnrolledCoursesCount
-                    </h3>
+                <div class="student-profile-mini">
 
-                    <p class="mb-0">
-                        Enrolled Courses
+                    <div class="student-profile-avatar">
+
+                        @if (!string.IsNullOrWhiteSpace(student?.Email))
+                        {
+                            @(student.Email.Substring(0, 1).ToUpper())
+                        }
+                        else
+                        {
+                            <span>S</span>
+                        }
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Student Account
+                        </span>
+
+                        <strong>
+                            @(student?.Email ?? "Student")
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row g-4 mb-5">
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="edu-stat-card student-stat-card">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <div class="edu-stat-label">
+                                Enrolled Courses
+                            </div>
+
+                            <div class="edu-stat-value">
+                                @ViewBag.EnrolledCoursesCount
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+                            C
+                        </div>
+
+                    </div>
+
+                    <p class="dashboard-stat-text mb-0">
+                        Courses you are currently enrolled in.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="edu-stat-card student-stat-card">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <div class="edu-stat-label">
+                                Watched Lessons
+                            </div>
+
+                            <div class="edu-stat-value">
+                                @ViewBag.WatchedLessonsCount
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+                            L
+                        </div>
+
+                    </div>
+
+                    <p class="dashboard-stat-text mb-0">
+                        Lessons you have already completed.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="edu-stat-card student-stat-card">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <div class="edu-stat-label">
+                                Completed Quizzes
+                            </div>
+
+                            <div class="edu-stat-value">
+                                @ViewBag.QuizGradesCount
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+                            Q
+                        </div>
+
+                    </div>
+
+                    <p class="dashboard-stat-text mb-0">
+                        Quizzes completed during your courses.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="edu-stat-card student-stat-card">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <div class="edu-stat-label">
+                                Final Exams
+                            </div>
+
+                            <div class="edu-stat-value">
+                                @ViewBag.FinalGradesCount
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-stat-icon">
+                            F
+                        </div>
+
+                    </div>
+
+                    <p class="dashboard-stat-text mb-0">
+                        Final exams you have already completed.
                     </p>
 
                 </div>
@@ -42,121 +194,268 @@
 
         </div>
 
-        <div class="col-md-3 mb-3">
+        <div class="row g-4">
 
-            <div class="card shadow-sm h-100 text-center">
+            <div class="col-xl-8">
 
-                <div class="card-body">
+                <div class="dashboard-panel">
 
-                    <h3 class="text-success">
-                        @ViewBag.WatchedLessonsCount
-                    </h3>
+                    <div class="dashboard-panel-header">
 
-                    <p class="mb-0">
-                        Watched Lessons
-                    </p>
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                Learning Center
+                            </span>
+
+                            <h2 class="dashboard-panel-title">
+                                Continue Your Learning
+                            </h2>
+
+                            <p class="dashboard-panel-subtitle">
+                                Access courses, lessons and your learning progress.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="student-action-grid">
+
+                        <a asp-controller="Enrollment"
+                           asp-action="Courses"
+                           class="student-action-card">
+
+                            <div class="student-action-icon">
+                                C
+                            </div>
+
+                            <div>
+
+                                <span class="student-action-label">
+                                    Discover
+                                </span>
+
+                                <h3>
+                                    Browse Courses
+                                </h3>
+
+                                <p>
+                                    Explore available courses and enroll in new learning content.
+                                </p>
+
+                            </div>
+
+                            <span class="student-action-arrow">
+                                →
+                            </span>
+
+                        </a>
+
+                        <a asp-controller="Enrollment"
+                           asp-action="MyCourses"
+                           class="student-action-card">
+
+                            <div class="student-action-icon">
+                                M
+                            </div>
+
+                            <div>
+
+                                <span class="student-action-label">
+                                    Learning
+                                </span>
+
+                                <h3>
+                                    My Courses
+                                </h3>
+
+                                <p>
+                                    Continue your enrolled courses and access their lessons.
+                                </p>
+
+                            </div>
+
+                            <span class="student-action-arrow">
+                                →
+                            </span>
+
+                        </a>
+
+                        <a asp-controller="Quiz"
+                           asp-action="MyGrades"
+                           class="student-action-card">
+
+                            <div class="student-action-icon">
+                                Q
+                            </div>
+
+                            <div>
+
+                                <span class="student-action-label">
+                                    Performance
+                                </span>
+
+                                <h3>
+                                    Quiz Grades
+                                </h3>
+
+                                <p>
+                                    Review your quiz results and track your course performance.
+                                </p>
+
+                            </div>
+
+                            <span class="student-action-arrow">
+                                →
+                            </span>
+
+                        </a>
+
+                        <a asp-controller="FinalExam"
+                           asp-action="MyFinalGrades"
+                           class="student-action-card">
+
+                            <div class="student-action-icon">
+                                F
+                            </div>
+
+                            <div>
+
+                                <span class="student-action-label">
+                                    Results
+                                </span>
+
+                                <h3>
+                                    Final Grades
+                                </h3>
+
+                                <p>
+                                    Review your completed final exams and final course results.
+                                </p>
+
+                            </div>
+
+                            <span class="student-action-arrow">
+                                →
+                            </span>
+
+                        </a>
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+            <div class="col-xl-4">
 
-        <div class="col-md-3 mb-3">
+                <div class="student-progress-card">
 
-            <div class="card shadow-sm h-100 text-center">
+                    <span class="dashboard-panel-label">
+                        Your Progress
+                    </span>
 
-                <div class="card-body">
+                    <h2>
+                        Learning Summary
+                    </h2>
 
-                    <h3 class="text-warning">
-                        @ViewBag.QuizGradesCount
-                    </h3>
-
-                    <p class="mb-0">
-                        Completed Quizzes
+                    <p>
+                        A quick overview of your activity on the platform.
                     </p>
 
-                </div>
+                    <div class="student-progress-list">
 
-            </div>
+                        <div class="student-progress-item">
 
-        </div>
+                            <div>
 
-        <div class="col-md-3 mb-3">
+                                <span>
+                                    Courses
+                                </span>
 
-            <div class="card shadow-sm h-100 text-center">
+                                <strong>
+                                    @ViewBag.EnrolledCoursesCount enrolled
+                                </strong>
 
-                <div class="card-body">
+                            </div>
 
-                    <h3 class="text-danger">
-                        @ViewBag.FinalGradesCount
-                    </h3>
+                            <div class="student-progress-circle">
+                                C
+                            </div>
 
-                    <p class="mb-0">
-                        Final Exams
-                    </p>
+                        </div>
 
-                </div>
+                        <div class="student-progress-item">
 
-            </div>
+                            <div>
 
-        </div>
+                                <span>
+                                    Lessons
+                                </span>
 
-    </div>
+                                <strong>
+                                    @ViewBag.WatchedLessonsCount watched
+                                </strong>
 
-    <div class="card shadow-sm">
+                            </div>
 
-        <div class="card-body">
+                            <div class="student-progress-circle">
+                                L
+                            </div>
 
-            <h4 class="mb-4">
-                Student Actions
-            </h4>
+                        </div>
 
-            <div class="row">
+                        <div class="student-progress-item">
 
-                <div class="col-md-6 mb-3">
+                            <div>
 
-                    <a asp-controller="Enrollment"
-                       asp-action="Courses"
-                       class="btn btn-primary w-100 p-3">
+                                <span>
+                                    Quizzes
+                                </span>
 
-                        Browse Courses
+                                <strong>
+                                    @ViewBag.QuizGradesCount completed
+                                </strong>
 
-                    </a>
+                            </div>
 
-                </div>
+                            <div class="student-progress-circle">
+                                Q
+                            </div>
 
-                <div class="col-md-6 mb-3">
+                        </div>
+
+                        <div class="student-progress-item">
+
+                            <div>
+
+                                <span>
+                                    Final Exams
+                                </span>
+
+                                <strong>
+                                    @ViewBag.FinalGradesCount completed
+                                </strong>
+
+                            </div>
+
+                            <div class="student-progress-circle">
+                                F
+                            </div>
+
+                        </div>
+
+                    </div>
 
                     <a asp-controller="Enrollment"
                        asp-action="MyCourses"
-                       class="btn btn-outline-primary w-100 p-3">
+                       class="btn edu-btn-primary w-100 mt-4">
 
-                        My Courses
-
-                    </a>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <a asp-controller="Quiz"
-                       asp-action="MyGrades"
-                       class="btn btn-outline-success w-100 p-3">
-
-                        My Quiz Grades
-
-                    </a>
-
-                </div>
-
-                <div class="col-md-6 mb-3">
-
-                    <a asp-controller="FinalExam"
-                       asp-action="MyFinalGrades"
-                       class="btn btn-outline-warning w-100 p-3">
-
-                        My Final Grades
+                        Continue Learning
+                        <span class="ms-1">
+                            →
+                        </span>
 
                     </a>
 
@@ -168,4 +467,4 @@
 
     </div>
 
-</div>
+</section>

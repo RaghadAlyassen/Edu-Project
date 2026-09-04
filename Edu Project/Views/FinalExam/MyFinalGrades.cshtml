@@ -4,110 +4,177 @@
     ViewData["Title"] = "My Final Grades";
 }
 
-<div class="container mt-4">
+<section class="edu-page-section">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="container">
 
-        <div>
+        <div class="edu-page-header">
 
-            <h2>My Final Grades</h2>
+            <span class="edu-hero-badge">
+                Final Exam Performance
+            </span>
 
-            <p class="text-muted mb-0">
-                View your final exam results.
-            </p>
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        My Final Grades
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Review your final exam scores and course results.
+                    </p>
+
+                </div>
+
+                <a asp-controller="Enrollment"
+                   asp-action="MyCourses"
+                   class="btn edu-btn-outline">
+
+                    My Courses
+
+                </a>
+
+            </div>
 
         </div>
 
-        <a asp-controller="Enrollment"
-           asp-action="MyCourses"
-           class="btn btn-outline-primary">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="dashboard-panel">
 
-            My Courses
+                <div class="dashboard-empty-state">
 
-        </a>
+                    <div class="dashboard-empty-icon">
+                        F
+                    </div>
+
+                    <h4>
+                        No final grades yet
+                    </h4>
+
+                    <p>
+                        You have not taken any final exams yet.
+                    </p>
+
+                    <a asp-controller="Enrollment"
+                       asp-action="MyCourses"
+                       class="btn edu-btn-primary">
+
+                        Go to My Courses
+
+                    </a>
+
+                </div>
+
+            </div>
+        }
+        else
+        {
+            <div class="grade-card-list">
+
+                @foreach (var grade in Model)
+                {
+                    var totalMarks =
+                        grade.Finalexam?.TotalMarks ?? 0;
+
+                    var percentage =
+                        totalMarks == 0
+                            ? 0
+                            : (grade.Grade * 100) / totalMarks;
+
+                    var passed =
+                        percentage >= 50;
+
+                    <div class="grade-card">
+
+                        <div class="grade-card-main">
+
+                            <div class="grade-card-icon @(passed ? "passed" : "failed")">
+                                @(passed ? "✓" : "!")
+                            </div>
+
+                            <div>
+
+                                <span class="grade-card-label">
+                                    Final Exam
+                                </span>
+
+                                <h3>
+                                    @(grade.Finalexam?.course?.Title ?? "Course")
+                                </h3>
+
+                                <p>
+                                    Exam:
+                                    <strong>
+                                        @(grade.Finalexam?.Title ?? "Final Exam")
+                                    </strong>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="grade-card-stats">
+
+                            <div>
+
+                                <span>
+                                    Grade
+                                </span>
+
+                                <strong>
+                                    @grade.Grade / @totalMarks
+                                </strong>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Percentage
+                                </span>
+
+                                <strong class="@(passed ? "grade-pass-text" : "grade-fail-text")">
+                                    @percentage%
+                                </strong>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Status
+                                </span>
+
+                                <strong class="@(passed ? "grade-pass-text" : "grade-fail-text")">
+                                    @(passed ? "Passed" : "Not Passed")
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                        <div class="grade-card-action">
+
+                            <a asp-controller="FinalExam"
+                               asp-action="Result"
+                               asp-route-finalExamId="@grade.FinalexamId"
+                               class="btn edu-btn-outline">
+
+                                View Result
+
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
 
     </div>
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">
-
-            You have not taken any final exams yet.
-
-        </div>
-    }
-    else
-    {
-        <div class="table-responsive">
-
-            <table class="table table-bordered table-hover">
-
-                <thead class="table-dark">
-
-                    <tr>
-
-                        <th>Course</th>
-                        <th>Grade</th>
-                        <th>Total Marks</th>
-                        <th>Percentage</th>
-                        <th></th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @foreach (var grade in Model)
-                    {
-                        var totalMarks =
-                            grade.Finalexam.TotalMarks;
-
-                        var percentage =
-                            totalMarks == 0
-                                ? 0
-                                : (grade.Grade * 100) /
-                                  totalMarks;
-
-                        <tr>
-
-                            <td>
-                                @grade.Finalexam.course?.Title
-                            </td>
-
-                            <td>
-                                @grade.Grade
-                            </td>
-
-                            <td>
-                                @totalMarks
-                            </td>
-
-                            <td>
-                                @percentage%
-                            </td>
-
-                            <td>
-
-                                <a asp-controller="FinalExam"
-                                   asp-action="Result"
-                                   asp-route-finalExamId="@grade.FinalexamId"
-                                   class="btn btn-sm btn-outline-primary">
-
-                                    View Result
-
-                                </a>
-
-                            </td>
-
-                        </tr>
-                    }
-
-                </tbody>
-
-            </table>
-
-        </div>
-    }
-
-</div>
+</section>

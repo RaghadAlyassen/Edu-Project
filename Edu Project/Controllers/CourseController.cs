@@ -6,158 +6,441 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-
-
-
 namespace Edu_Project.Controllers
 {
+    [Authorize(Roles = "Instructor,Admin")]
     public class CourseController : Controller
     {
-
         private readonly Context _context;
-        public CourseController (Context context)
+        private readonly UserManager<User> _userManager;
+
+        public CourseController(
+            Context context,
+            UserManager<User> userManager)
         {
             _context = context;
-           
-
+            _userManager = userManager;
         }
-        
-        public async Task<IActionResult>  Index()
+
+        public async Task<IActionResult> Index()
         {
-            var courses = await _context.Courses
-            .Include(c => c.Instructor)
-            .Include(c => c.Category)
-            .ToArrayAsync();
+            var currentUserId =
+                _userManager.GetUserId(User);
+
+            if (User.IsInRole("Admin"))
+            {
+                var allCourses =
+                    await _context.Courses
+                        .Include(c => c.Instructor)
+                        .Include(c => c.Category)
+                        .ToListAsync();
+
+                return View(allCourses);
+            }
+
+            var courses =
+                await _context.Courses
+                    .Where(c =>
+                        c.InstructorId ==
+                        currentUserId)
+                    .Include(c => c.Instructor)
+                    .Include(c => c.Category)
+                    .ToListAsync();
+
             return View(courses);
         }
 
-        public async Task<IActionResult> Details(int ? Id)
+        public async Task<IActionResult> Details(
+            int? id)
         {
-            if (Id == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            var Course = await _context.Courses
-            .Include (c => c.Instructor)
-            .Include (c => c.Category)
-            .FirstOrDefaultAsync( m => m.Id == Id);
+            var currentUserId =
+                _userManager.GetUserId(User);
 
-            if (Course == null) return NotFound();
+            var course =
+                await _context.Courses
+                    .Include(c => c.Instructor)
+                    .Include(c => c.Category)
+                    .Include(c => c.Finalexam)
+                    .FirstOrDefaultAsync(
+                        c => c.Id == id);
 
-            return View(Course);
+            if (course == null)
+            {
+                return NotFound();
+            }
 
+            if (!User.IsInRole("Admin") &&
+                course.InstructorId !=
+                currentUserId)
+            {
+                return Forbid();
+            }
+
+            return View(course);
         }
 
-        //[Authorize(Roles = "Instructor")]
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name");
-            ViewBag.Instructors = new SelectList(_context.Instructors, "Id", "UserName");
+            var instructorId =
+                _userManager.GetUserId(User);
+
+            if (instructorId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+            var instructor =
+                await _context.Instructors
+                    .FirstOrDefaultAsync(
+                        i => i.Id ==
+                        instructorId);
+
+            if (instructor == null)
+            {
+                return NotFound();
+            }
+
+            var specialization =
+                instructor.Specialization
+                    ?.Trim()
+                    .ToLower();
+
+            var categories =
+                await _context.Categories
+                    .Where(c =>
+                        c.Name
+                            .Trim()
+                            .ToLower() ==
+                        specialization)
+                    .ToListAsync();
+
+            ViewBag.Categories =
+                new SelectList(
+                    categories,
+                    "Id",
+                    "Name");
+
             return View();
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-       
-        public async Task<IActionResult> Create(Course course)
+        public async Task<IActionResult> Create(
+            Course course)
         {
+            var instructorId =
+                _userManager.GetUserId(User);
 
-            var defaultInstructor = _context.Users.FirstOrDefault();
-            if (defaultInstructor != null)
+            if (instructorId == null)
             {
-                course.InstructorId = defaultInstructor.Id;
+                return RedirectToAction(
+                    "Login",
+                    "Account");
             }
 
+            var instructor =
+                await _context.Instructors
+                    .FirstOrDefaultAsync(
+                        i => i.Id ==
+                        instructorId);
 
-            if (course.CategoryId == 0)
+            if (instructor == null)
             {
-                ModelState.AddModelError("CategoryId", "Please select a valid category.");
+                return NotFound();
             }
 
-            if (ModelState.IsValid)
+            course.InstructorId =
+                instructorId;
+
+            ModelState.Remove(
+                nameof(Course.InstructorId));
+
+            var specialization =
+                instructor.Specialization
+                    ?.Trim()
+                    .ToLower();
+
+            var category =
+                await _context.Categories
+                    .FirstOrDefaultAsync(
+                        c =>
+                            c.Id ==
+                            course.CategoryId &&
+                            c.Name
+                                .Trim()
+                                .ToLower() ==
+                            specialization);
+
+            if (category == null)
             {
-                _context.Add(course);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError(
+                    nameof(Course.CategoryId),
+                    "Please select a category that matches your specialization.");
             }
 
-            ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name", course.CategoryId);
-            ViewBag.Instructors = new SelectList(_context.Instructors, "Id", "UserName", course.InstructorId);
-            return View(course);
+            if (!ModelState.IsValid)
+            {
+                var categories =
+                    await _context.Categories
+                        .Where(c =>
+                            c.Name
+                                .Trim()
+                                .ToLower() ==
+                            specialization)
+                        .ToListAsync();
+
+                ViewBag.Categories =
+                    new SelectList(
+                        categories,
+                        "Id",
+                        "Name",
+                        course.CategoryId);
+
+                return View(course);
+            }
+
+            _context.Courses.Add(course);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(
+                nameof(Index));
         }
 
-
-        //[Authorize(Roles ="Instructor")]
         [HttpGet]
-        public async Task<IActionResult> Edit (int? Id)
+        public async Task<IActionResult> Edit(
+            int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            if (Id == null) return NotFound();
-            var Course = await _context.Courses.FindAsync(Id);
-            if (Course == null) return NotFound();
+            var instructorId =
+                _userManager.GetUserId(User);
 
-            ViewBag.categoryId = new SelectList(_context.Categories, "Id", "Name", Course.CategoryId);
-            ViewBag.InstructorId = new SelectList(_context.Instructors, "Id", "UserName", Course.InstructorId);
+            var course =
+                await _context.Courses
+                    .FirstOrDefaultAsync(
+                        c => c.Id == id);
 
-            return View(Course);
+            if (course == null)
+            {
+                return NotFound();
+            }
 
+            if (!User.IsInRole("Admin") &&
+                course.InstructorId !=
+                instructorId)
+            {
+                return Forbid();
+            }
+
+            if (User.IsInRole("Admin"))
+            {
+                var allCategories =
+                    await _context.Categories
+                        .ToListAsync();
+
+                ViewBag.Categories =
+                    new SelectList(
+                        allCategories,
+                        "Id",
+                        "Name",
+                        course.CategoryId);
+
+                return View(course);
+            }
+
+            var instructor =
+                await _context.Instructors
+                    .FirstOrDefaultAsync(
+                        i => i.Id ==
+                        instructorId);
+
+            if (instructor == null)
+            {
+                return NotFound();
+            }
+
+            var specialization =
+                instructor.Specialization
+                    ?.Trim()
+                    .ToLower();
+
+            var categories =
+                await _context.Categories
+                    .Where(c =>
+                        c.Name
+                            .Trim()
+                            .ToLower() ==
+                        specialization)
+                    .ToListAsync();
+
+            ViewBag.Categories =
+                new SelectList(
+                    categories,
+                    "Id",
+                    "Name",
+                    course.CategoryId);
+
+            return View(course);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles ="Instructor")]
-        public async Task<IActionResult> Edit (   int Id, Course course)
+        public async Task<IActionResult> Edit(
+            int id,
+            Course course)
         {
-
-           
-
-            if (string.IsNullOrEmpty(course.InstructorId))
+            if (id != course.Id)
             {
-                var existingCourse = await _context.Courses.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id);
-                if (existingCourse != null)
-                {
-                    course.InstructorId = existingCourse.InstructorId;
-                }
-            }
-            
-
-
-            if (Id != course.Id) return NotFound();
-            if (ModelState.IsValid)
-            {
-
-                try
-                {
-                _context.Update(course);
-                await _context.SaveChangesAsync();
-
-
-
-                }
-
-                catch (DbUpdateConcurrencyException) 
-                {
-                    if (!_context.Courses.Any(e => e.Id == Id)) 
-                    {
-                        return NotFound();
-
-                    }
-
-                    else throw;
-
-                    
-                }
-                return RedirectToAction(nameof(Index));
-
+                return NotFound();
             }
 
-            ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name", course.CategoryId);
-            ViewBag.Instructors = new SelectList(_context.Instructors, "Id", "UserName", course.InstructorId);
-            return View(course);
-            
+            var instructorId =
+                _userManager.GetUserId(User);
 
+            var courseInDb =
+                await _context.Courses
+                    .FirstOrDefaultAsync(
+                        c => c.Id == id);
+
+            if (courseInDb == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsInRole("Admin") &&
+                courseInDb.InstructorId !=
+                instructorId)
+            {
+                return Forbid();
+            }
+
+            if (User.IsInRole("Admin"))
+            {
+                var categoryExists =
+                    await _context.Categories
+                        .AnyAsync(
+                            c =>
+                                c.Id ==
+                                course.CategoryId);
+
+                if (!categoryExists)
+                {
+                    ModelState.AddModelError(
+                        nameof(Course.CategoryId),
+                        "Please select a valid category.");
+                }
+            }
+            else
+            {
+                var instructor =
+                    await _context.Instructors
+                        .FirstOrDefaultAsync(
+                            i => i.Id ==
+                            instructorId);
+
+                if (instructor == null)
+                {
+                    return NotFound();
+                }
+
+                var specialization =
+                    instructor.Specialization
+                        ?.Trim()
+                        .ToLower();
+
+                var categoryExists =
+                    await _context.Categories
+                        .AnyAsync(
+                            c =>
+                                c.Id ==
+                                course.CategoryId &&
+                                c.Name
+                                    .Trim()
+                                    .ToLower() ==
+                                specialization);
+
+                if (!categoryExists)
+                {
+                    ModelState.AddModelError(
+                        nameof(Course.CategoryId),
+                        "Please select a category that matches your specialization.");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                if (User.IsInRole("Admin"))
+                {
+                    ViewBag.Categories =
+                        new SelectList(
+                            await _context.Categories
+                                .ToListAsync(),
+                            "Id",
+                            "Name",
+                            course.CategoryId);
+                }
+                else
+                {
+                    var instructor =
+                        await _context.Instructors
+                            .FirstOrDefaultAsync(
+                                i => i.Id ==
+                                instructorId);
+
+                    var specialization =
+                        instructor?
+                            .Specialization
+                            ?.Trim()
+                            .ToLower();
+
+                    var categories =
+                        await _context.Categories
+                            .Where(c =>
+                                c.Name
+                                    .Trim()
+                                    .ToLower() ==
+                                specialization)
+                            .ToListAsync();
+
+                    ViewBag.Categories =
+                        new SelectList(
+                            categories,
+                            "Id",
+                            "Name",
+                            course.CategoryId);
+                }
+
+                return View(course);
+            }
+
+            courseInDb.Title =
+                course.Title;
+
+            courseInDb.Descciption =
+                course.Descciption;
+
+            courseInDb.CategoryId =
+                course.CategoryId;
+
+            courseInDb.Price =
+                course.Price;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(
+                nameof(Index));
         }
-
-       
     }
 }

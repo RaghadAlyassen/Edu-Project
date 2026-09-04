@@ -1,4 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentController =
+        ViewContext.RouteData.Values["controller"]?
+        .ToString();
+
+    var currentAction =
+        ViewContext.RouteData.Values["action"]?
+        .ToString();
+}
+
+<!DOCTYPE html>
 
 <html lang="en">
 
@@ -15,6 +25,16 @@
 
     <script type="importmap"></script>
 
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet" />
+
     <link rel="stylesheet"
           href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
@@ -30,26 +50,33 @@
 
 <body>
 
-    <header>
+    <header class="edu-header">
 
-        <nav class="navbar navbar-expand-lg
-                    navbar-dark bg-dark
-                    shadow-sm mb-3">
+        <nav class="navbar navbar-expand-lg edu-navbar">
 
             <div class="container">
 
-                <a class="navbar-brand"
+                <a class="navbar-brand edu-brand"
                    asp-controller="Home"
                    asp-action="Index">
 
-                    Edu Project
+                    <span class="edu-brand-icon">
+                        E
+                    </span>
+
+                    <span class="edu-brand-text">
+                        EduProject
+                    </span>
 
                 </a>
 
                 <button class="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#mainNavbar">
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
 
                     <span class="navbar-toggler-icon"></span>
 
@@ -58,11 +85,11 @@
                 <div class="collapse navbar-collapse"
                      id="mainNavbar">
 
-                    <ul class="navbar-nav me-auto">
+                    <ul class="navbar-nav mx-auto align-items-lg-center">
 
                         <li class="nav-item">
 
-                            <a class="nav-link"
+                            <a class="nav-link edu-nav-link @(currentController == "Home" && currentAction == "Index" ? "edu-nav-active" : "")"
                                asp-controller="Home"
                                asp-action="Index">
 
@@ -78,7 +105,7 @@
                         {
                             <li class="nav-item">
 
-                                <a class="nav-link"
+                                <a class="nav-link edu-nav-link @(currentController == "StudentDashboard" ? "edu-nav-active" : "")"
                                    asp-controller="StudentDashboard"
                                    asp-action="Index">
 
@@ -90,7 +117,7 @@
 
                             <li class="nav-item">
 
-                                <a class="nav-link"
+                                <a class="nav-link edu-nav-link @(currentController == "Enrollment" && currentAction == "Courses" ? "edu-nav-active" : "")"
                                    asp-controller="Enrollment"
                                    asp-action="Courses">
 
@@ -102,7 +129,7 @@
 
                             <li class="nav-item">
 
-                                <a class="nav-link"
+                                <a class="nav-link edu-nav-link @(currentController == "Enrollment" && currentAction == "MyCourses" ? "edu-nav-active" : "")"
                                    asp-controller="Enrollment"
                                    asp-action="MyCourses">
 
@@ -112,13 +139,60 @@
 
                             </li>
 
+                            <li class="nav-item dropdown">
+
+                                <a class="nav-link dropdown-toggle edu-nav-link @(currentController == "Quiz" || currentController == "FinalExam" ? "edu-nav-active" : "")"
+                                   href="#"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+
+                                    Grades
+
+                                </a>
+
+                                <ul class="dropdown-menu edu-dropdown">
+
+                                    <li>
+
+                                        <a class="dropdown-item"
+                                           asp-controller="Quiz"
+                                           asp-action="MyGrades">
+
+                                            Quiz Grades
+
+                                        </a>
+
+                                    </li>
+
+                                    <li>
+
+                                        <a class="dropdown-item"
+                                           asp-controller="FinalExam"
+                                           asp-action="MyFinalGrades">
+
+                                            Final Grades
+
+                                        </a>
+
+                                    </li>
+
+                                </ul>
+
+                            </li>
+                        }
+
+                        @if (User.Identity != null &&
+                             User.Identity.IsAuthenticated &&
+                             User.IsInRole("Instructor"))
+                        {
                             <li class="nav-item">
 
-                                <a class="nav-link"
-                                   asp-controller="Quiz"
-                                   asp-action="MyGrades">
+                                <a class="nav-link edu-nav-link @(currentController == "Instructor" && currentAction == "Index" ? "edu-nav-active" : "")"
+                                   asp-controller="Instructor"
+                                   asp-action="Index">
 
-                                    Quiz Grades
+                                    Dashboard
 
                                 </a>
 
@@ -126,11 +200,76 @@
 
                             <li class="nav-item">
 
-                                <a class="nav-link"
-                                   asp-controller="FinalExam"
-                                   asp-action="MyFinalGrades">
+                                <a class="nav-link edu-nav-link @(currentController == "Course" ? "edu-nav-active" : "")"
+                                   asp-controller="Course"
+                                   asp-action="Index">
 
-                                    Final Grades
+                                    My Courses
+
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link edu-nav-link @(currentController == "Category" ? "edu-nav-active" : "")"
+                                   asp-controller="Category"
+                                   asp-action="Index">
+
+                                    Categories
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @if (User.Identity != null &&
+                             User.Identity.IsAuthenticated &&
+                             User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+
+                                <a class="nav-link edu-nav-link @(currentController == "Instructor" && currentAction == "Index" ? "edu-nav-active" : "")"
+                                   asp-controller="Instructor"
+                                   asp-action="Index">
+
+                                    Dashboard
+
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link edu-nav-link @(currentController == "Instructor" && currentAction == "Manage" ? "edu-nav-active" : "")"
+                                   asp-controller="Instructor"
+                                   asp-action="Manage">
+
+                                    Instructors
+
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link edu-nav-link @(currentController == "Course" ? "edu-nav-active" : "")"
+                                   asp-controller="Course"
+                                   asp-action="Index">
+
+                                    Courses
+
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link edu-nav-link @(currentController == "Category" ? "edu-nav-active" : "")"
+                                   asp-controller="Category"
+                                   asp-action="Index">
+
+                                    Categories
 
                                 </a>
 
@@ -139,61 +278,172 @@
 
                     </ul>
 
-                    <ul class="navbar-nav">
+                    <div class="d-flex align-items-center gap-3">
 
                         @if (User.Identity != null &&
                              User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
+                            <div class="edu-user">
 
-                                <span class="nav-link text-light">
+                                <div class="edu-user-avatar">
 
-                                    @User.Identity.Name
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        User.Identity.Name))
+                                    {
+                                        <span>
+                                            @(User.Identity.Name
+                                                .Substring(0, 1)
+                                                .ToUpper())
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            U
+                                        </span>
+                                    }
 
-                                </span>
+                                </div>
 
-                            </li>
+                                <div class="edu-user-info">
 
-                            <li class="nav-item">
+                                    <span class="edu-user-label">
+                                        Welcome
+                                    </span>
 
-                                <form asp-controller="Account"
-                                      asp-action="Logout"
-                                      method="post">
+                                    <span class="edu-user-name">
+                                        @User.Identity.Name
+                                    </span>
 
-                                    @Html.AntiForgeryToken()
+                                </div>
 
-                                    <button type="submit"
-                                            class="btn btn-link nav-link">
+                            </div>
 
-                                        Logout
+                            <form asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post">
 
-                                    </button>
+                                @Html.AntiForgeryToken()
 
-                                </form>
+                                <button type="submit"
+                                        class="btn edu-btn-outline">
 
-                            </li>
+                                    Logout
+
+                                </button>
+
+                            </form>
                         }
                         else
                         {
-                            <li class="nav-item">
+                            <a class="edu-login-link"
+                               asp-controller="Account"
+                               asp-action="Login">
 
-                                <a class="nav-link"
-                                   asp-controller="Account"
-                                   asp-action="Login">
+                                Login
 
-                                    Login
+                            </a>
+
+                            <a class="btn edu-btn-primary"
+                               asp-controller="Account"
+                               asp-action="Register">
+
+                                Get Started
+
+                                <span>
+                                    →
+                                </span>
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+    <main role="main"
+          class="edu-main">
+
+        @RenderBody()
+
+    </main>
+
+    <footer class="edu-footer">
+
+        <div class="container">
+
+            <div class="row gy-4">
+
+                <div class="col-lg-5">
+
+                    <a class="edu-footer-brand"
+                       asp-controller="Home"
+                       asp-action="Index">
+
+                        <span class="edu-brand-icon">
+                            E
+                        </span>
+
+                        EduProject
+
+                    </a>
+
+                    <p class="edu-footer-description">
+
+                        Learn new skills, explore courses,
+                        track your progress and achieve your
+                        learning goals in one place.
+
+                    </p>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <h5>
+                        Quick Links
+                    </h5>
+
+                    <ul class="edu-footer-links">
+
+                        <li>
+
+                            <a asp-controller="Home"
+                               asp-action="Index">
+
+                                Home
+
+                            </a>
+
+                        </li>
+
+                        @if (User.Identity != null &&
+                             User.Identity.IsAuthenticated &&
+                             User.IsInRole("Student"))
+                        {
+                            <li>
+
+                                <a asp-controller="Enrollment"
+                                   asp-action="Courses">
+
+                                    Courses
 
                                 </a>
 
                             </li>
 
-                            <li class="nav-item">
+                            <li>
 
-                                <a class="nav-link"
-                                   asp-controller="Account"
-                                   asp-action="Register">
+                                <a asp-controller="Enrollment"
+                                   asp-action="MyCourses">
 
-                                    Register
+                                    My Courses
 
                                 </a>
 
@@ -204,28 +454,30 @@
 
                 </div>
 
+                <div class="col-lg-4 col-md-6">
+
+                    <h5>
+                        Education Platform
+                    </h5>
+
+                    <p class="edu-footer-description">
+
+                        A modern platform for students,
+                        instructors and administrators.
+
+                    </p>
+
+                </div>
+
             </div>
 
-        </nav>
+            <div class="edu-footer-bottom">
 
-    </header>
+                <span>
+                    © 2026 Edu Project. All rights reserved.
+                </span>
 
-    <div class="container">
-
-        <main role="main"
-              class="pb-3">
-
-            @RenderBody()
-
-        </main>
-
-    </div>
-
-    <footer class="border-top footer text-muted">
-
-        <div class="container">
-
-            &copy; 2026 - Edu Project
+            </div>
 
         </div>
 

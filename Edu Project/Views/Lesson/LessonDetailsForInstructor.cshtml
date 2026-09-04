@@ -1,27 +1,312 @@
-﻿@model List<Lesson>
+﻿@model List<Edu_Project.Models.Lesson>
 
-@if (Model != null && Model.Any())
-{
-    
-    @foreach (var i in Model)
+@{
+    ViewData["Title"] = "Manage Lessons";
+
+    var courseId = ViewBag.cid;
+
+    if ((courseId == null || courseId == 0) &&
+        Model != null &&
+        Model.Any())
     {
-        <p>
-            Title : @i.Title <br />
-            Description : @i.Description <br />
-            Order : @i.Order <br />
-            Video link : <a href="@i.VideoURL" target="_blank">Watch Video</a><br />
-            <a asp-action="DeleteLesson" asp-route-id="@i.Id" asp-controller="Leson" class="btn btn-danger">Delete</a>
-            <a asp-action="EditLesson" asp-route-id="@i.Id" asp-controller="Leson" class="btn btn-primary">Edit</a>
-            <a asp-action="QuizDetails" asp-route-id="@i.Id"  asp-controller="Exam" class="btn btn-primary">Quiz details</a>
-        </p>
+        courseId = Model[0].CourseId;
     }
+}
 
-    <a asp-controller="Exam" asp-action="FinalDetails" asp-route-id="@Model[0].CourseId" class="btn btn-primary"></a>
-    <a asp-action="CreateLesson" asp-controller="Leson" asp-route-cid="@ViewBag.cid" class="btn btn-success">+ Add Lesson</a>
-}
-else
-{
-    
-    <p>No lessons found for this course.</p>
-    <a asp-action="CreateLesson" asp-controller="Leson" asp-route-cid="@ViewBag.cid" class="btn btn-success">+ Add Lesson</a>
-}
+<section class="edu-page-section">
+
+    <div class="container">
+
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Lesson Management
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Manage Lessons
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Add lessons, manage quizzes and organize your course content.
+                    </p>
+
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <a asp-action="CreateLesson"
+                       asp-controller="Lesson"
+                       asp-route-cid="@courseId"
+                       class="btn edu-btn-primary">
+
+                        Add Lesson
+                        <span class="ms-1">
+                            +
+                        </span>
+
+                    </a>
+
+                    @if (courseId != null)
+                    {
+                        <a asp-controller="Course"
+                           asp-action="Details"
+                           asp-route-id="@courseId"
+                           class="btn edu-btn-outline">
+
+                            Back to Course
+
+                        </a>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="lesson-summary-card mb-4">
+
+                <div>
+
+                    <span class="dashboard-panel-label">
+                        Course Content
+                    </span>
+
+                    <h2>
+                        @Model.Count Lesson@(Model.Count == 1 ? "" : "s")
+                    </h2>
+
+                    <p>
+                        Lessons are displayed according to their course order.
+                    </p>
+
+                </div>
+
+                <a asp-controller="Exam"
+                   asp-action="FinalDetails"
+                   asp-route-id="@courseId"
+                   class="btn edu-btn-outline">
+
+                    Final Exam Details
+
+                </a>
+
+            </div>
+
+            <div class="lesson-list">
+
+                @foreach (var lesson in Model.OrderBy(l => l.Order))
+                {
+                    <div class="lesson-card">
+
+                        <div class="lesson-order">
+                            @lesson.Order
+                        </div>
+
+                        <div class="lesson-card-content">
+
+                            <div class="lesson-card-header">
+
+                                <div>
+
+                                    <span class="lesson-card-label">
+                                        Lesson @lesson.Order
+                                    </span>
+
+                                    <h3>
+                                        @lesson.Title
+                                    </h3>
+
+                                </div>
+
+                                <div class="lesson-card-actions">
+
+                                    <a asp-controller="Lesson"
+                                       asp-action="EditLesson"
+                                       asp-route-id="@lesson.Id"
+                                       class="btn edu-btn-outline">
+
+                                        Edit
+
+                                    </a>
+
+                                    <form asp-controller="Lesson"
+                                          asp-action="DeleteLesson"
+                                          asp-route-id="@lesson.Id"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn dashboard-danger-button"
+                                                onclick="return confirm('Are you sure you want to delete this lesson? The quiz and related data will also be deleted.');">
+
+                                            Delete
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                            <p class="lesson-description">
+
+                                @if (!string.IsNullOrWhiteSpace(lesson.Description))
+                                {
+                                    @lesson.Description
+                                }
+                                else
+                                {
+                                    <span>
+                                        No description available for this lesson.
+                                    </span>
+                                }
+
+                            </p>
+
+                            <div class="lesson-info-row">
+
+                                <div class="lesson-info-item">
+
+                                    <span>
+                                        Order
+                                    </span>
+
+                                    <strong>
+                                        @lesson.Order
+                                    </strong>
+
+                                </div>
+
+                                <div class="lesson-info-item">
+
+                                    <span>
+                                        Video
+                                    </span>
+
+                                    @if (!string.IsNullOrWhiteSpace(lesson.VideoURL))
+                                    {
+                                        <a href="@lesson.VideoURL"
+                                           target="_blank"
+                                           rel="noopener noreferrer">
+
+                                            Watch Video ↗
+
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <strong>
+                                            Not Available
+                                        </strong>
+                                    }
+
+                                </div>
+
+                                <div class="lesson-info-item">
+
+                                    <span>
+                                        Quiz
+                                    </span>
+
+                                    <a asp-controller="Exam"
+                                       asp-action="QuizDetails"
+                                       asp-route-id="@lesson.Id">
+
+                                        Quiz Details →
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mt-4">
+
+                <a asp-controller="Course"
+                   asp-action="Details"
+                   asp-route-id="@courseId"
+                   class="btn edu-btn-outline">
+
+                    ← Back to Course
+
+                </a>
+
+                <a asp-controller="Exam"
+                   asp-action="FinalDetails"
+                   asp-route-id="@courseId"
+                   class="btn edu-btn-primary">
+
+                    Final Exam Details
+
+                </a>
+
+            </div>
+        }
+        else
+        {
+            <div class="dashboard-panel">
+
+                <div class="dashboard-empty-state">
+
+                    <div class="dashboard-empty-icon">
+                        L
+                    </div>
+
+                    <h4>
+                        No lessons yet
+                    </h4>
+
+                    <p>
+                        Start building this course by creating the first lesson.
+                    </p>
+
+                    <a asp-action="CreateLesson"
+                       asp-controller="Lesson"
+                       asp-route-cid="@courseId"
+                       class="btn edu-btn-primary">
+
+                        Add First Lesson
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            @if (courseId != null)
+            {
+                <div class="mt-4">
+
+                    <a asp-controller="Course"
+                       asp-action="Details"
+                       asp-route-id="@courseId"
+                       class="btn edu-btn-outline">
+
+                        ← Back to Course
+
+                    </a>
+
+                </div>
+            }
+        }
+
+    </div>
+
+</section>

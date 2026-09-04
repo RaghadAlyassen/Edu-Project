@@ -2,16 +2,119 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
+<section class="auth-page">
 
-            <div class="card shadow">
-                <div class="card-body p-4">
+    <div class="container">
 
-                    <h2 class="text-center mb-4">
-                        Student Registration
-                    </h2>
+        <div class="row align-items-center justify-content-center g-5">
+
+            <div class="col-lg-6 d-none d-lg-block">
+
+                <div class="auth-intro">
+
+                    <span class="edu-hero-badge">
+                        Join EduProject
+                    </span>
+
+                    <h1>
+                        Start your learning journey today.
+                    </h1>
+
+                    <p>
+                        Create your student account, enroll in courses, complete lessons and track your results.
+                    </p>
+
+                    <div class="auth-feature-list">
+
+                        <div class="auth-feature-item">
+
+                            <div class="auth-feature-icon">
+                                C
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Explore Courses
+                                </strong>
+
+                                <span>
+                                    Browse available courses and choose what you want to learn.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="auth-feature-item">
+
+                            <div class="auth-feature-icon">
+                                L
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Complete Lessons
+                                </strong>
+
+                                <span>
+                                    Watch lessons and keep track of your course progress.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="auth-feature-item">
+
+                            <div class="auth-feature-icon">
+                                G
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Track Grades
+                                </strong>
+
+                                <span>
+                                    View quiz and final exam results from your dashboard.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-5 col-md-8">
+
+                <div class="auth-card">
+
+                    <div class="auth-card-header">
+
+                        <div class="auth-logo">
+                            E
+                        </div>
+
+                        <span class="dashboard-panel-label">
+                            Student Registration
+                        </span>
+
+                        <h2>
+                            Create your account
+                        </h2>
+
+                        <p>
+                            Enter your details to join the learning platform.
+                        </p>
+
+                    </div>
 
                     @if (ViewBag.ErrorMessage != null)
                     {
@@ -30,61 +133,85 @@
 
                         @Html.AntiForgeryToken()
 
-                        <div class="mb-3">
+                        <div class="mb-4">
+
                             <label class="form-label">
-                                Email
+                                Email Address
                             </label>
 
                             <input type="email"
                                    name="email"
-                                   class="form-control"
-                                   placeholder="Enter your email"
+                                   class="form-control auth-input"
+                                   placeholder="name@example.com"
+                                   autocomplete="email"
                                    required />
+
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
+
                             <label class="form-label">
                                 Password
                             </label>
 
                             <input type="password"
                                    name="password"
-                                   class="form-control"
-                                   placeholder="Enter password"
+                                   class="form-control auth-input"
+                                   placeholder="Create a password"
+                                   autocomplete="new-password"
                                    required />
+
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
+
                             <label class="form-label">
                                 Confirm Password
                             </label>
 
                             <input type="password"
                                    name="confirmPassword"
-                                   class="form-control"
-                                   placeholder="Confirm password"
+                                   class="form-control auth-input"
+                                   placeholder="Re-enter your password"
+                                   autocomplete="new-password"
                                    required />
+
                         </div>
 
                         <button type="submit"
-                                class="btn btn-primary w-100">
-                            Register
+                                class="btn edu-btn-primary w-100 auth-submit-button">
+
+                            Create Account
+                            <span class="ms-1">
+                                →
+                            </span>
+
                         </button>
 
                     </form>
 
-                    <div class="text-center mt-3">
-                        Already have an account?
+                    <div class="auth-divider">
 
-                        <a asp-controller="Account"
-                           asp-action="Login">
-                            Login
-                        </a>
+                        <span>
+                            Already have an account?
+                        </span>
+
                     </div>
 
+                    <a asp-controller="Account"
+                       asp-action="Login"
+                       class="btn edu-btn-outline w-100">
+
+                        Login
+
+                    </a>
+
                 </div>
+
             </div>
 
         </div>
+
     </div>
-</div>
+
+</section>

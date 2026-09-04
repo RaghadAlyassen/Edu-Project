@@ -10,7 +10,6 @@ namespace Edu_Project.Data
             : base(options)
         {
         }
-        
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Instructor> Instructors { get; set; }
@@ -136,11 +135,6 @@ namespace Edu_Project.Data
                 .HasOne(c => c.Category)
                 .WithMany(ct => ct.Courses)
                 .HasForeignKey(c => c.CategoryId);
-
-            builder.Entity<Category>()
-                .HasOne(ct => ct.Instructor)
-                .WithMany(c => c.categories)
-                .HasForeignKey(ct => ct.InstructorId);
 
             builder.Entity<Enrollment>()
                 .HasKey(e => new

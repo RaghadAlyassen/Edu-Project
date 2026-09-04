@@ -4,54 +4,238 @@
     ViewData["Title"] = "Create Course";
 }
 
-<div class="container mt-4">
-    <h2>Create New Course</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-6">
-            <form asp-action="Create" method="post">
+<section class="edu-page-section">
 
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    <div class="container">
 
-                <div class="mb-3">
-                    <label asp-for="Title" class="form-label fw-bold"></label>
-                    <input asp-for="Title" class="form-control" />
-                    <span asp-validation-for="Title" class="text-danger"></span>
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Course Management
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Create New Course
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Add a new course and assign it to the appropriate category.
+                    </p>
+
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Descciption" class="form-label fw-bold"></label>
-                    <textarea asp-for="Descciption" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Descciption" class="text-danger"></span>
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <a asp-action="Index"
+                       class="btn edu-btn-outline">
+
+                        Back to Courses
+
+                    </a>
+
+                    <a asp-controller="Instructor"
+                       asp-action="Index"
+                       class="btn edu-btn-outline">
+
+                        Back to Dashboard
+
+                    </a>
+
                 </div>
 
-                
-                <div class="mb-3">
-                    <label asp-for="CategoryId" class="form-label fw-bold">Category</label>
-                    <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
-                        <option value="">-- Select Category --</option>
-                    </select>
-                    <span asp-validation-for="CategoryId" class="text-danger"></span>
-                </div>
+            </div>
 
-                
-                <div class="mb-3">
-                    <input type="hidden" asp-for="InstructorId" />
-                </div>
-
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-success">Create</button>
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                    <a asp-controller="Instructor" asp-action="Index" class="btn btn-primary">Back to Dashboard</a>
-                </div>
-
-            </form>
         </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-xl-9">
+
+                <div class="lesson-form-card">
+
+                    <div class="lesson-form-header">
+
+                        <div class="lesson-form-icon">
+                            C
+                        </div>
+
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                New Course
+                            </span>
+
+                            <h2>
+                                Course Information
+                            </h2>
+
+                            <p>
+                                Enter the course title, description and category.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <form asp-action="Create"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All"
+                             class="alert alert-danger mb-4">
+                        </div>
+
+                        <input type="hidden"
+                               asp-for="InstructorId" />
+
+                        <div class="row g-4">
+
+                            <div class="col-12">
+
+                                <label asp-for="Title"
+                                       class="form-label">
+                                    Course Title
+                                </label>
+
+                                <input asp-for="Title"
+                                       class="form-control"
+                                       placeholder="Example: Cyber Security Fundamentals"
+                                       required />
+
+                                <span asp-validation-for="Title"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label asp-for="Descciption"
+                                       class="form-label">
+                                    Description
+                                </label>
+
+                                <textarea asp-for="Descciption"
+                                          class="form-control"
+                                          rows="5"
+                                          placeholder="Write a short description about what students will learn in this course..."
+                                          required></textarea>
+
+                                <span asp-validation-for="Descciption"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-md-8">
+
+                                <label asp-for="CategoryId"
+                                       class="form-label">
+                                    Category
+                                </label>
+
+                                <select asp-for="CategoryId"
+                                        class="form-select"
+                                        asp-items="ViewBag.Categories"
+                                        required>
+
+                                    <option value="">
+                                        Select Category
+                                    </option>
+
+                                </select>
+
+                                <span asp-validation-for="CategoryId"
+                                      class="text-danger small">
+                                </span>
+
+                                <div class="form-text">
+                                    Available categories match the instructor specialization.
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label asp-for="Price"
+                                       class="form-label">
+                                    Price
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input asp-for="Price"
+                                           type="number"
+                                           min="0"
+                                           class="form-control"
+                                           placeholder="0" />
+
+                                    <span class="input-group-text">
+                                        EGP
+                                    </span>
+
+                                </div>
+
+                                <span asp-validation-for="Price"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lesson-form-next">
+
+                            <div>
+
+                                <span class="lesson-form-next-label">
+                                    Next Step
+                                </span>
+
+                                <strong>
+                                    Create Course
+                                </strong>
+
+                                <p>
+                                    After creating the course, you can start adding lessons, quizzes and the final exam.
+                                </p>
+
+                            </div>
+
+                            <button type="submit"
+                                    class="btn edu-btn-primary">
+
+                                Create Course
+                                <span class="ms-1">
+                                    →
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-</div>
+
+</section>
 
 @section Scripts {
+
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
     }
+
 }

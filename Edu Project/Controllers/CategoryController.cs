@@ -1,145 +1,136 @@
 ﻿using Edu_Project.Data;
 using Edu_Project.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-
-
 
 namespace Edu_Project.Controllers
 {
+    [Authorize(Roles = "Admin,Instructor")]
     public class CategoryController : Controller
     {
         private readonly Context _context;
 
         public CategoryController(Context context)
         {
-
             _context = context;
-            
         }
 
         public async Task<IActionResult> Index()
         {
-            var categories = await _context.Categories
-            .Include(c => c.Instructor)
-            .Include(c => c.Courses)
-            .ToListAsync();
+            var categories =
+                await _context.Categories
+                    .Include(c => c.Courses)
+                    .ToListAsync();
+
             return View(categories);
-
         }
 
-
-        public async Task<IActionResult> Details(int? Id)
+        public async Task<IActionResult> Details(int? id)
         {
-
-            if (Id == null) return NotFound();
-
-            var Category = await _context.Categories
-            .Include(c => c.Instructor)
-            .Include(c => c.Courses)
-            .FirstOrDefaultAsync(m => m.Id == Id);
-
-            if (Category == null) return NotFound();
-
-            return View(Category);
-        }
-
-
-        [HttpGet]
-        public IActionResult Create()
-        {
-
-            
-            ViewBag.Instructors = new SelectList(_context.Instructors, "Id", "UserName");
-            return View();
-        }
-
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Category category)
-
-        {
-
-            var defaultInstructor = _context.Users.FirstOrDefault();
-            if (defaultInstructor != null)
+            if (id == null)
             {
-                category.InstructorId = defaultInstructor.Id;
+                return NotFound();
             }
 
+            var category =
+                await _context.Categories
+                    .Include(c => c.Courses)
+                    .FirstOrDefaultAsync(
+                        c => c.Id == id);
 
-
-            if (ModelState.IsValid)
+            if (category == null)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
 
             return View(category);
         }
 
-        //[Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> Edit(int? Id)
-
+        public IActionResult Create()
         {
-
-            if (Id == null) return NotFound();
-            var Category = await _context.Categories.FindAsync(Id);
-            if (Category == null) return NotFound();
-            var instructorsCount = _context.Instructors.Count();
-            System.Diagnostics.Debug.WriteLine("Total Instructors found: " + instructorsCount);
-
-            ViewBag.Instructors = new SelectList(_context.Instructors, "Id", "UserName", Category.InstructorId);
-            return View(Category);
-
+            return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,  Category category)
-
+        public async Task<IActionResult> Create(
+            Category category)
         {
-            
+            if (!ModelState.IsValid)
+            {
+                return View(category);
+            }
+
+            _context.Categories.Add(category);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(
+                nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var category =
+                await _context.Categories
+                    .FindAsync(id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            return View(category);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            int id,
+            Category category)
+        {
             if (id != category.Id)
             {
                 return NotFound();
             }
 
-            
-            System.Diagnostics.Debug.WriteLine("POST InstructorId: " + category.InstructorId);
+            var categoryInDb =
+                await _context.Categories
+                    .FirstOrDefaultAsync(
+                        c => c.Id == id);
 
-            if (ModelState.IsValid)
+            if (categoryInDb == null)
             {
-                try
-                {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Categories.Any(e => e.Id ==category.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
 
-     
-            ViewBag.Instructors = new SelectList(_context.Instructors, "Id", "UserName", category.InstructorId);
-            return View(category);
+            if (!ModelState.IsValid)
+            {
+                return View(category);
+            }
+
+            categoryInDb.Name =
+                category.Name;
+
+            categoryInDb.Description =
+                category.Description;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(
+                nameof(Index));
         }
-
-
     }
 }

@@ -1,14 +1,220 @@
-﻿@model Lesson
-<form asp-action="CreateLesson"method="post">
-    <input type="hidden" asp-for="CourseId" value="@ViewBag.courseid" />
-    <label>lesson title : </label>
-    <input type="text" asp-for="Title" required ><br />
-    <label>order : </label>
-    <input type="number" asp-for="Order" required /><br />
-    <label>video URL : </label>
-    <input type="url" asp-for="VideoURL" required /><br />
-    <label>description : </label>
-    <input type="text" asp-for="Description"  required/>
-    <button type="submit">quiz</button>
+﻿@model Edu_Project.Models.Lesson
 
-</form>
+@{
+    ViewData["Title"] = "Create Lesson";
+}
+
+<section class="edu-page-section">
+
+    <div class="container">
+
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Lesson Management
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Create New Lesson
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Add lesson content, video and description, then continue to create its quiz.
+                    </p>
+
+                </div>
+
+                <a asp-controller="Lesson"
+                   asp-action="LessonDetailsForInstructor"
+                   asp-route-id="@ViewBag.courseid"
+                   class="btn edu-btn-outline">
+
+                    Back to Lessons
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-xl-9">
+
+                <div class="lesson-form-card">
+
+                    <div class="lesson-form-header">
+
+                        <div class="lesson-form-icon">
+                            L
+                        </div>
+
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                New Lesson
+                            </span>
+
+                            <h2>
+                                Lesson Information
+                            </h2>
+
+                            <p>
+                                Enter the lesson details below.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <form asp-action="CreateLesson"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All"
+                             class="alert alert-danger mb-4">
+                        </div>
+
+                        <input type="hidden"
+                               asp-for="CourseId"
+                               value="@ViewBag.courseid" />
+
+                        <div class="row g-4">
+
+                            <div class="col-md-8">
+
+                                <label asp-for="Title"
+                                       class="form-label">
+                                    Lesson Title
+                                </label>
+
+                                <input asp-for="Title"
+                                       class="form-control"
+                                       placeholder="Example: Introduction to Cyber Security"
+                                       required />
+
+                                <span asp-validation-for="Title"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label asp-for="Order"
+                                       class="form-label">
+                                    Lesson Order
+                                </label>
+
+                                <input asp-for="Order"
+                                       type="number"
+                                       class="form-control"
+                                       min="1"
+                                       placeholder="1"
+                                       required />
+
+                                <span asp-validation-for="Order"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label asp-for="VideoURL"
+                                       class="form-label">
+                                    Video URL
+                                </label>
+
+                                <input asp-for="VideoURL"
+                                       type="url"
+                                       class="form-control"
+                                       placeholder="https://www.youtube.com/..."
+                                       required />
+
+                                <span asp-validation-for="VideoURL"
+                                      class="text-danger small">
+                                </span>
+
+                                <div class="form-text">
+                                    Add a valid video link for this lesson.
+                                </div>
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label asp-for="Description"
+                                       class="form-label">
+                                    Description
+                                </label>
+
+                                <textarea asp-for="Description"
+                                          class="form-control"
+                                          rows="5"
+                                          placeholder="Write a short description about what students will learn in this lesson..."
+                                          required></textarea>
+
+                                <span asp-validation-for="Description"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lesson-form-next">
+
+                            <div>
+
+                                <span class="lesson-form-next-label">
+                                    Next Step
+                                </span>
+
+                                <strong>
+                                    Create Lesson Quiz
+                                </strong>
+
+                                <p>
+                                    After saving this lesson, you will continue to add its quiz and questions.
+                                </p>
+
+                            </div>
+
+                            <button type="submit"
+                                    class="btn edu-btn-primary">
+
+                                Create Lesson & Add Quiz
+                                <span class="ms-1">
+                                    →
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
+    }
+
+}

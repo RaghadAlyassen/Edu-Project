@@ -4,48 +4,177 @@
     ViewData["Title"] = "Create Category";
 }
 
-<div class="container mt-4">
-    <h2>Create New Category</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-6">
-            <form asp-action="Create" method="post">
+<section class="edu-page-section">
 
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <div class="container">
 
-                <div class="mb-3">
-                    <label asp-for="Name" class="form-label fw-bold"></label>
-                    <input asp-for="Name" class="form-control" autocomplete="off" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Category Management
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Create Category
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Add a new global category that can be used to organize courses.
+                    </p>
+
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Description" class="form-label fw-bold"></label>
-                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <a asp-action="Index"
+                       class="btn edu-btn-outline">
+
+                        Back to Categories
+
+                    </a>
+
+                    <a asp-controller="Instructor"
+                       asp-action="Index"
+                       class="btn edu-btn-outline">
+
+                        Back to Dashboard
+
+                    </a>
+
                 </div>
 
-                <div class="mb-3">
-                    <input type="hidden" asp-for="InstructorId" />
-                </div>
+            </div>
 
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-success">Create</button>
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                    <div class="mb-3">
+        </div>
 
-                        <a asp-controller="Instructor" asp-action="Index" class="btn btn-primary">Back to Dashboard</a>
+        <div class="row justify-content-center">
+
+            <div class="col-xl-8">
+
+                <div class="lesson-form-card">
+
+                    <div class="lesson-form-header">
+
+                        <div class="lesson-form-icon">
+                            G
+                        </div>
+
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                New Category
+                            </span>
+
+                            <h2>
+                                Category Information
+                            </h2>
+
+                            <p>
+                                Enter the category name and a short description.
+                            </p>
+
+                        </div>
 
                     </div>
+
+                    <form asp-action="Create"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="alert alert-danger mb-4">
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="Name"
+                                   class="form-label">
+                                Category Name
+                            </label>
+
+                            <input asp-for="Name"
+                                   class="form-control"
+                                   autocomplete="off"
+                                   placeholder="Example: Cyber Security"
+                                   required />
+
+                            <span asp-validation-for="Name"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="Description"
+                                   class="form-label">
+                                Description
+                            </label>
+
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="5"
+                                      placeholder="Write a short description about this category..."
+                                      required></textarea>
+
+                            <span asp-validation-for="Description"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <div class="lesson-form-next">
+
+                            <div>
+
+                                <span class="lesson-form-next-label">
+                                    Save Category
+                                </span>
+
+                                <strong>
+                                    Create New Category
+                                </strong>
+
+                                <p>
+                                    This category will become available across the platform.
+                                </p>
+
+                            </div>
+
+                            <button type="submit"
+                                    class="btn edu-btn-primary">
+
+                                Create Category
+                                <span class="ms-1">
+                                    →
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
                 </div>
 
-            </form>
+            </div>
+
         </div>
+
     </div>
-</div>
+
+</section>
 
 @section Scripts {
+
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
     }
+
 }

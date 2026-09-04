@@ -4,38 +4,222 @@
     ViewData["Title"] = "Category Details";
 }
 
-<div class="container mt-4">
-    <h2>Category Details</h2>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Name:</dt>
-        <dd class="col-sm-10">@Model.Name</dd>
+<section class="edu-page-section">
 
-        <dt class="col-sm-2">Description:</dt>
-        <dd class="col-sm-10">@Model.Description</dd>
+    <div class="container">
 
-        <dt class="col-sm-2">Instructor:</dt>
-        <dd class="col-sm-10">@Model.Instructor?.UserName</dd>
+        <div class="edu-page-header">
 
-        <dt class="col-sm-2">Courses:</dt>
-        <dd class="col-sm-10">
-            @if (Model.Courses != null && Model.Courses.Any())
-            {
-                <ul>
-                    @foreach (var course in Model.Courses)
+            <span class="edu-hero-badge">
+                Category Details
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        @Model.Name
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Review category information and the courses assigned to it.
+                    </p>
+
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    @if (User.IsInRole("Admin"))
                     {
-                        <li>@course.Title</li>
+                        <a asp-action="Edit"
+                           asp-route-id="@Model.Id"
+                           class="btn edu-btn-primary">
+
+                            Edit Category
+
+                        </a>
                     }
-                </ul>
-            }
-            else
-            {
-                <span>No courses available in this category.</span>
-            }
-        </dd>
-    </dl>
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+
+                    <a asp-action="Index"
+                       class="btn edu-btn-outline">
+
+                        Back to Categories
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-xl-5">
+
+                <div class="category-details-card">
+
+                    <div class="category-details-icon">
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Name))
+                        {
+                            @(Model.Name.Substring(0, 1).ToUpper())
+                        }
+                        else
+                        {
+                            <span>G</span>
+                        }
+
+                    </div>
+
+                    <span class="dashboard-panel-label">
+                        Course Category
+                    </span>
+
+                    <h2>
+                        @Model.Name
+                    </h2>
+
+                    <p>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Description))
+                        {
+                            @Model.Description
+                        }
+                        else
+                        {
+                            <span>
+                                No description available for this category.
+                            </span>
+                        }
+
+                    </p>
+
+                    <div class="category-details-stat">
+
+                        <span>
+                            Courses
+                        </span>
+
+                        <strong>
+                            @(Model.Courses?.Count ?? 0)
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-xl-7">
+
+                <div class="dashboard-panel">
+
+                    <div class="dashboard-panel-header">
+
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                Category Content
+                            </span>
+
+                            <h2 class="dashboard-panel-title">
+                                Courses
+                            </h2>
+
+                            <p class="dashboard-panel-subtitle">
+                                Courses currently assigned to this category.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    @if (Model.Courses != null &&
+                         Model.Courses.Any())
+                    {
+                        <div class="category-course-list">
+
+                            @foreach (var course in Model.Courses)
+                            {
+                                <div class="category-course-item">
+
+                                    <div class="category-course-icon">
+
+                                        @if (!string.IsNullOrWhiteSpace(course.Title))
+                                        {
+                                            @(course.Title.Substring(0, 1).ToUpper())
+                                        }
+                                        else
+                                        {
+                                            <span>C</span>
+                                        }
+
+                                    </div>
+
+                                    <div class="category-course-content">
+
+                                        <h3>
+                                            @course.Title
+                                        </h3>
+
+                                        <p>
+
+                                            @if (!string.IsNullOrWhiteSpace(course.Descciption))
+                                            {
+                                                @course.Descciption
+                                            }
+                                            else
+                                            {
+                                                <span>
+                                                    No description available.
+                                                </span>
+                                            }
+
+                                        </p>
+
+                                    </div>
+
+                                    <a asp-controller="Course"
+                                       asp-action="Details"
+                                       asp-route-id="@course.Id"
+                                       class="btn edu-btn-outline">
+
+                                        Details
+
+                                    </a>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dashboard-empty-state">
+
+                            <div class="dashboard-empty-icon">
+                                C
+                            </div>
+
+                            <h4>
+                                No courses available
+                            </h4>
+
+                            <p>
+                                There are currently no courses assigned to this category.
+                            </p>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-</div>
+
+</section>

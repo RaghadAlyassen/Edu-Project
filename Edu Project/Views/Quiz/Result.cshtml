@@ -13,66 +13,161 @@
         totalMarks == 0
             ? 0
             : (Model.Grade * 100) / totalMarks;
+
+    var passed =
+        percentage >= 50;
 }
 
-<div class="container mt-5">
+<section class="edu-page-section">
 
-    <div class="row justify-content-center">
+    <div class="container">
 
-        <div class="col-md-7">
+        <div class="row justify-content-center">
 
-            <div class="card shadow text-center">
+            <div class="col-xl-8">
 
-                <div class="card-body p-5">
+                <div class="quiz-result-card">
 
-                    <h2 class="mb-4">
-                        Quiz Result
-                    </h2>
+                    <div class="quiz-result-header @(passed ? "passed" : "failed")">
 
-                    @if (quiz != null)
-                    {
-                        <h4>
-                            @quiz.Title
-                        </h4>
-                    }
+                        <div class="quiz-result-status-icon">
+                            @(passed ? "✓" : "!")
+                        </div>
 
-                    <div class="display-4 fw-bold text-primary my-4">
+                        <span class="dashboard-panel-label">
+                            Quiz Result
+                        </span>
 
-                        @Model.Grade / @totalMarks
+                        <h1>
+                            @(passed
+                                ? "Congratulations!"
+                                : "Quiz Completed")
+                        </h1>
+
+                        <p>
+                            @(passed
+                                ? "You successfully passed this quiz."
+                                : "You completed the quiz, but your score is below the passing mark.")
+                        </p>
 
                     </div>
 
-                    <p class="fs-5">
-                        Percentage:
-                        <strong>@percentage%</strong>
-                    </p>
+                    <div class="quiz-result-body">
 
-                    @if (percentage >= 50)
-                    {
-                        <div class="alert alert-success mt-4">
-                            Congratulations! You passed the quiz.
+                        @if (quiz != null)
+                        {
+                            <div class="quiz-result-title">
+
+                                <span>
+                                    Quiz
+                                </span>
+
+                                <h2>
+                                    @quiz.Title
+                                </h2>
+
+                            </div>
+                        }
+
+                        <div class="quiz-result-score-area">
+
+                            <div class="quiz-result-score-circle @(passed ? "passed" : "failed")">
+
+                                <span class="quiz-result-percentage">
+                                    @percentage%
+                                </span>
+
+                                <span class="quiz-result-score-label">
+                                    Score
+                                </span>
+
+                            </div>
+
+                            <div class="quiz-result-score-details">
+
+                                <div class="quiz-result-score-item">
+
+                                    <span>
+                                        Your Grade
+                                    </span>
+
+                                    <strong>
+                                        @Model.Grade
+                                    </strong>
+
+                                </div>
+
+                                <div class="quiz-result-score-item">
+
+                                    <span>
+                                        Total Marks
+                                    </span>
+
+                                    <strong>
+                                        @totalMarks
+                                    </strong>
+
+                                </div>
+
+                                <div class="quiz-result-score-item">
+
+                                    <span>
+                                        Result
+                                    </span>
+
+                                    <strong class="@(passed ? "quiz-result-pass-text" : "quiz-result-fail-text")">
+                                        @(passed ? "Passed" : "Not Passed")
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
                         </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-warning mt-4">
-                            You did not pass this quiz.
+
+                        <div class="quiz-result-message @(passed ? "passed" : "failed")">
+
+                            <div class="quiz-result-message-icon">
+                                @(passed ? "✓" : "!")
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    @(passed
+                                        ? "Great job!"
+                                        : "Keep learning!")
+                                </strong>
+
+                                <p>
+                                    @(passed
+                                        ? "You achieved the required passing score for this quiz."
+                                        : "Review the lesson content and continue improving your understanding.")
+                                </p>
+
+                            </div>
+
                         </div>
-                    }
 
-                    <div class="d-grid gap-2 mt-4">
+                        <div class="quiz-result-actions">
 
-                        <a asp-controller="Quiz"
-                           asp-action="MyGrades"
-                           class="btn btn-primary">
-                            My Quiz Grades
-                        </a>
+                            <a asp-controller="Quiz"
+                               asp-action="MyGrades"
+                               class="btn edu-btn-primary">
 
-                        <a asp-controller="Enrollment"
-                           asp-action="MyCourses"
-                           class="btn btn-outline-secondary">
-                            Back to My Courses
-                        </a>
+                                My Quiz Grades
+
+                            </a>
+
+                            <a asp-controller="Enrollment"
+                               asp-action="MyCourses"
+                               class="btn edu-btn-outline">
+
+                                Back to My Courses
+
+                            </a>
+
+                        </div>
 
                     </div>
 
@@ -84,4 +179,4 @@
 
     </div>
 
-</div>
+</section>

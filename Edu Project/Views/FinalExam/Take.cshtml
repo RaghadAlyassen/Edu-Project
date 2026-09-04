@@ -2,110 +2,272 @@
 
 @{
     ViewData["Title"] = "Take Final Exam";
+
+    var totalQuestions =
+        Model.Question?.Count ?? 0;
 }
 
-<div class="container mt-4">
+<section class="edu-page-section">
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
+    <div class="container">
 
-            <h2>Final Exam</h2>
+        <div class="edu-page-header">
 
-            @if (Model.course != null)
-            {
-                <h5 class="text-muted">
-                    @Model.course.Title
-                </h5>
-            }
+            <span class="edu-hero-badge">
+                Final Exam
+            </span>
 
-            <p class="mb-1">
-                <strong>Duration:</strong>
-                @Model.Duration minutes
-            </p>
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
 
-            <p>
-                <strong>Total Marks:</strong>
-                @Model.TotalMarks
-            </p>
+                <div>
 
-        </div>
-    </div>
+                    <h1 class="edu-page-title">
+                        @Model.Title
+                    </h1>
 
-    @if (Model.Question == null || !Model.Question.Any())
-    {
-        <div class="alert alert-info">
-            No questions are available for this exam.
-        </div>
-    }
-    else
-    {
-        <form asp-controller="FinalExam"
-              asp-action="Submit"
-              method="post">
-
-            @Html.AntiForgeryToken()
-
-            <input type="hidden"
-                   name="finalExamId"
-                   value="@Model.Id" />
-
-            @{
-                int questionNumber = 1;
-            }
-
-            @foreach (var question in Model.Question)
-            {
-                <div class="card shadow-sm mb-4">
-
-                    <div class="card-body">
-
-                        <h5>
-                            Question @questionNumber
-                        </h5>
-
-                        <p class="fw-bold">
-                            @question.Text
-                        </p>
-
-                        @if (question.Answers != null)
-                        {
-                            @foreach (var answer in question.Answers)
-                            {
-                                <div class="form-check mb-2">
-
-                                    <input class="form-check-input"
-                                           type="radio"
-                                           name="answers[@question.Id]"
-                                           value="@answer.Id"
-                                           id="answer_@answer.Id"
-                                           required />
-
-                                    <label class="form-check-label"
-                                           for="answer_@answer.Id">
-
-                                        @answer.Text
-
-                                    </label>
-
-                                </div>
-                            }
-                        }
-
-                    </div>
+                    <p class="edu-page-subtitle mb-0">
+                        Complete all questions carefully, then submit your final exam.
+                    </p>
 
                 </div>
 
-                questionNumber++;
-            }
+            </div>
 
-            <button type="submit"
-                    class="btn btn-success w-100 mb-4">
+        </div>
 
-                Submit Final Exam
+        <div class="student-quiz-summary">
 
-            </button>
+            <div class="student-quiz-summary-main">
 
-        </form>
-    }
+                <div class="quiz-summary-icon">
+                    F
+                </div>
 
-</div>
+                <div>
+
+                    <span class="dashboard-panel-label">
+                        Final Exam Overview
+                    </span>
+
+                    <h2>
+                        @Model.Title
+                    </h2>
+
+                    @if (Model.course != null)
+                    {
+                        <p>
+                            Course: @Model.course.Title
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            Complete all @totalQuestions questions before submitting.
+                        </p>
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="quiz-summary-stats">
+
+                <div class="quiz-summary-stat">
+
+                    <span>
+                        Duration
+                    </span>
+
+                    <strong>
+                        @Model.Duration min
+                    </strong>
+
+                </div>
+
+                <div class="quiz-summary-stat">
+
+                    <span>
+                        Total Marks
+                    </span>
+
+                    <strong>
+                        @Model.TotalMarks
+                    </strong>
+
+                </div>
+
+                <div class="quiz-summary-stat">
+
+                    <span>
+                        Questions
+                    </span>
+
+                    <strong>
+                        @totalQuestions
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @if (Model.Question == null ||
+             !Model.Question.Any())
+        {
+            <div class="dashboard-panel">
+
+                <div class="dashboard-empty-state">
+
+                    <div class="dashboard-empty-icon">
+                        F
+                    </div>
+
+                    <h4>
+                        No questions available
+                    </h4>
+
+                    <p>
+                        This final exam does not contain any questions yet.
+                    </p>
+
+                </div>
+
+            </div>
+        }
+        else
+        {
+            <form asp-controller="FinalExam"
+                  asp-action="Submit"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="finalExamId"
+                       value="@Model.Id" />
+
+                @{
+                    var questionNumber = 1;
+                }
+
+                <div class="student-quiz-question-list">
+
+                    @foreach (var question in Model.Question)
+                    {
+                        var answers =
+                            question.Answers?.ToList()
+                            ?? new List<Edu_Project.Models.Answer>();
+
+                        <div class="student-quiz-question-card">
+
+                            <div class="student-quiz-question-header">
+
+                                <div class="quiz-question-number">
+                                    @questionNumber
+                                </div>
+
+                                <div>
+
+                                    <span class="quiz-question-label">
+                                        Question @questionNumber
+                                    </span>
+
+                                    <h2>
+                                        @question.Text
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+                            @if (answers.Any())
+                            {
+                                <div class="student-quiz-answer-list">
+
+                                    @for (var i = 0;
+                                          i < answers.Count;
+                                          i++)
+                                    {
+                                        var answer =
+                                            answers[i];
+
+                                        var answerLetter =
+                                            i == 0 ? "A" :
+                                            i == 1 ? "B" :
+                                            i == 2 ? "C" : "D";
+
+                                        <label class="student-quiz-answer-option"
+                                               for="answer_@answer.Id">
+
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   name="answers[@question.Id]"
+                                                   value="@answer.Id"
+                                                   id="answer_@answer.Id"
+                                                   required />
+
+                                            <span class="student-quiz-answer-letter">
+                                                @answerLetter
+                                            </span>
+
+                                            <span class="student-quiz-answer-text">
+                                                @answer.Text
+                                            </span>
+
+                                        </label>
+                                    }
+
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="quiz-no-answers">
+                                    No answers are available for this question.
+                                </div>
+                            }
+
+                        </div>
+
+                        questionNumber++;
+                    }
+
+                </div>
+
+                <div class="student-quiz-submit-card">
+
+                    <div>
+
+                        <span class="lesson-form-next-label">
+                            Finish Final Exam
+                        </span>
+
+                        <strong>
+                            Ready to submit?
+                        </strong>
+
+                        <p>
+                            Check all your answers before submitting the final exam.
+                        </p>
+
+                    </div>
+
+                    <button type="submit"
+                            class="btn edu-btn-primary"
+                            onclick="return confirm('Are you sure you want to submit this final exam?');">
+
+                        Submit Final Exam
+                        <span class="ms-1">
+                            →
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+        }
+
+    </div>
+
+</section>

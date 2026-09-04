@@ -1,8 +1,543 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="edu-hero">
+
+    <div class="container">
+
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-7">
+
+                <span class="edu-hero-badge">
+                    Modern Learning Platform
+                </span>
+
+                <h1 class="edu-hero-title">
+                    Learn smarter,
+                    grow faster with
+                    <span>
+                        EduProject
+                    </span>
+                </h1>
+
+                <p class="edu-hero-text">
+                    Explore courses, complete lessons, take quizzes and final exams,
+                    and track your learning progress from one simple platform.
+                </p>
+
+                <div class="edu-hero-actions">
+
+                    @if (User.Identity != null &&
+                         User.Identity.IsAuthenticated)
+                    {
+                        @if (User.IsInRole("Student"))
+                        {
+                            <a asp-controller="Enrollment"
+                               asp-action="Courses"
+                               class="btn edu-btn-primary">
+
+                                Explore Courses
+                                <span class="ms-1">
+                                    →
+                                </span>
+
+                            </a>
+
+                            <a asp-controller="StudentDashboard"
+                               asp-action="Index"
+                               class="btn edu-btn-outline">
+
+                                My Dashboard
+
+                            </a>
+                        }
+                        else if (User.IsInRole("Instructor"))
+                        {
+                            <a asp-controller="Instructor"
+                               asp-action="Index"
+                               class="btn edu-btn-primary">
+
+                                Instructor Dashboard
+                                <span class="ms-1">
+                                    →
+                                </span>
+
+                            </a>
+
+                            <a asp-controller="Course"
+                               asp-action="Index"
+                               class="btn edu-btn-outline">
+
+                                My Courses
+
+                            </a>
+                        }
+                        else if (User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="Instructor"
+                               asp-action="Index"
+                               class="btn edu-btn-primary">
+
+                                Admin Dashboard
+                                <span class="ms-1">
+                                    →
+                                </span>
+
+                            </a>
+
+                            <a asp-controller="Category"
+                               asp-action="Index"
+                               class="btn edu-btn-outline">
+
+                                Manage Categories
+
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <a asp-controller="Account"
+                           asp-action="Register"
+                           class="btn edu-btn-primary">
+
+                            Start Learning
+                            <span class="ms-1">
+                                →
+                            </span>
+
+                        </a>
+
+                        <a asp-controller="Account"
+                           asp-action="Login"
+                           class="btn edu-btn-outline">
+
+                            Login
+
+                        </a>
+                    }
+
+                </div>
+
+                <div class="home-hero-stats">
+
+                    <div>
+
+                        <strong>
+                            Learn
+                        </strong>
+
+                        <span>
+                            Access organized courses and lessons.
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Practice
+                        </strong>
+
+                        <span>
+                            Complete quizzes after your lessons.
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Progress
+                        </strong>
+
+                        <span>
+                            Track grades and course completion.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-5">
+
+                <div class="home-learning-preview">
+
+                    <div class="home-preview-top">
+
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                Your Learning Journey
+                            </span>
+
+                            <h3>
+                                Everything you need in one place
+                            </h3>
+
+                        </div>
+
+                        <div class="home-preview-logo">
+                            E
+                        </div>
+
+                    </div>
+
+                    <div class="home-preview-course">
+
+                        <div class="home-preview-course-icon">
+                            C
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Course
+                            </span>
+
+                            <strong>
+                                Learn with structured content
+                            </strong>
+
+                        </div>
+
+                        <span class="home-preview-check">
+                            ✓
+                        </span>
+
+                    </div>
+
+                    <div class="home-preview-progress">
+
+                        <div class="d-flex justify-content-between mb-2">
+
+                            <span>
+                                Course Progress
+                            </span>
+
+                            <strong>
+                                75%
+                            </strong>
+
+                        </div>
+
+                        <div class="student-modern-progress">
+
+                            <div class="student-modern-progress-bar"
+                                 style="width: 75%;">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-6">
+
+                            <div class="home-preview-small-card">
+
+                                <span>
+                                    Lessons
+                                </span>
+
+                                <strong>
+                                    Learn
+                                </strong>
+
+                                <small>
+                                    Watch and complete content
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-6">
+
+                            <div class="home-preview-small-card">
+
+                                <span>
+                                    Quizzes
+                                </span>
+
+                                <strong>
+                                    Practice
+                                </strong>
+
+                                <small>
+                                    Test your understanding
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="home-features-section">
+
+    <div class="container">
+
+        <div class="home-section-heading">
+
+            <span class="edu-hero-badge">
+                Platform Features
+            </span>
+
+            <h2>
+                Everything for a complete learning experience
+            </h2>
+
+            <p>
+                EduProject connects students and instructors through courses,
+                lessons, exams and progress tracking.
+            </p>
+
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="home-feature-card">
+
+                    <div class="home-feature-icon">
+                        C
+                    </div>
+
+                    <h3>
+                        Courses
+                    </h3>
+
+                    <p>
+                        Explore organized courses across different categories.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="home-feature-card">
+
+                    <div class="home-feature-icon">
+                        L
+                    </div>
+
+                    <h3>
+                        Lessons
+                    </h3>
+
+                    <p>
+                        Follow structured lessons and track what you complete.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="home-feature-card">
+
+                    <div class="home-feature-icon">
+                        Q
+                    </div>
+
+                    <h3>
+                        Quizzes
+                    </h3>
+
+                    <p>
+                        Test your knowledge after lessons and review your grades.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="home-feature-card">
+
+                    <div class="home-feature-icon">
+                        F
+                    </div>
+
+                    <h3>
+                        Final Exams
+                    </h3>
+
+                    <p>
+                        Complete final exams and view your overall course results.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="home-roles-section">
+
+    <div class="container">
+
+        <div class="row g-4 align-items-stretch">
+
+            <div class="col-lg-6">
+
+                <div class="home-role-card student">
+
+                    <span class="dashboard-panel-label">
+                        For Students
+                    </span>
+
+                    <h2>
+                        Learn and track your progress
+                    </h2>
+
+                    <p>
+                        Enroll in courses, complete lessons, take quizzes and final exams,
+                        and review all your grades from your personal dashboard.
+                    </p>
+
+                    @if (User.Identity == null ||
+                         !User.Identity.IsAuthenticated)
+                    {
+                        <a asp-controller="Account"
+                           asp-action="Register"
+                           class="btn edu-btn-primary">
+
+                            Create Student Account
+
+                        </a>
+                    }
+                    else if (User.IsInRole("Student"))
+                    {
+                        <a asp-controller="StudentDashboard"
+                           asp-action="Index"
+                           class="btn edu-btn-primary">
+
+                            Go to Dashboard
+
+                        </a>
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="home-role-card instructor">
+
+                    <span class="dashboard-panel-label">
+                        For Instructors
+                    </span>
+
+                    <h2>
+                        Build and manage learning content
+                    </h2>
+
+                    <p>
+                        Create courses, organize lessons, build quizzes and final exams,
+                        and manage course content from one dashboard.
+                    </p>
+
+                    @if (User.Identity != null &&
+                         User.Identity.IsAuthenticated &&
+                         User.IsInRole("Instructor"))
+                    {
+                        <a asp-controller="Instructor"
+                           asp-action="Index"
+                           class="btn edu-btn-outline">
+
+                            Instructor Dashboard
+
+                        </a>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="home-cta-section">
+
+    <div class="container">
+
+        <div class="home-cta-card">
+
+            <div>
+
+                <span class="dashboard-panel-label">
+                    Start Today
+                </span>
+
+                <h2>
+                    Ready to start learning?
+                </h2>
+
+                <p>
+                    Create your student account and explore available courses.
+                </p>
+
+            </div>
+
+            @if (User.Identity == null ||
+                 !User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Account"
+                   asp-action="Register"
+                   class="btn edu-btn-primary">
+
+                    Get Started
+                    <span class="ms-1">
+                        →
+                    </span>
+
+                </a>
+            }
+            else if (User.IsInRole("Student"))
+            {
+                <a asp-controller="Enrollment"
+                   asp-action="Courses"
+                   class="btn edu-btn-primary">
+
+                    Explore Courses
+                    <span class="ms-1">
+                        →
+                    </span>
+
+                </a>
+            }
+
+        </div>
+
+    </div>
+
+</section>

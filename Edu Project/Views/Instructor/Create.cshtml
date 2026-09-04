@@ -4,46 +4,227 @@
     ViewData["Title"] = "Add New Instructor";
 }
 
-<div class="container mt-4">
-    <h2>Add New Instructor</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-6">
-            <form asp-action="Create" method="post">
+<section class="edu-page-section">
 
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    <div class="container">
 
-                <div class="mb-3">
-                    <label asp-for="UserName" class="form-label fw-bold"></label>
-                    <input asp-for="UserName" class="form-control" autocomplete="off" />
-                    <span asp-validation-for="UserName" class="text-danger"></span>
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Instructor Management
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Add New Instructor
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Create a new instructor account and assign a specialization.
+                    </p>
+
                 </div>
 
-                
-                <div class="mb-3">
-                    <label asp-for="Specialization" class="form-label fw-bold"></label>
-                    <input asp-for="Specialization" class="form-control" autocomplete="off" />
-                    <span asp-validation-for="Specialization" class="text-danger"></span>
-                </div>
+                <a asp-action="Index"
+                   class="btn edu-btn-outline">
 
-                <div class="mb-3">
-                    <label asp-for="ProfileImg" class="form-label fw-bold"></label>
-                    <input asp-for="ProfileImg" class="form-control" autocomplete="off" />
-                    <span asp-validation-for="ProfileImg" class="text-danger"></span>
-                </div>
+                    Back to Dashboard
 
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-dark">Create</button>
-                    <a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
-                </div>
+                </a>
 
-            </form>
+            </div>
+
         </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-xl-9">
+
+                <div class="lesson-form-card">
+
+                    <div class="lesson-form-header">
+
+                        <div class="lesson-form-icon">
+                            I
+                        </div>
+
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                New Instructor
+                            </span>
+
+                            <h2>
+                                Instructor Information
+                            </h2>
+
+                            <p>
+                                Enter the instructor account and specialization details.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <form asp-action="Create"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All"
+                             class="alert alert-danger mb-4">
+                        </div>
+
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+
+                                <label asp-for="Email"
+                                       class="form-label">
+                                    Email Address
+                                </label>
+
+                                <input asp-for="Email"
+                                       type="email"
+                                       class="form-control"
+                                       autocomplete="off"
+                                       placeholder="instructor@example.com"
+                                       required />
+
+                                <span asp-validation-for="Email"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label asp-for="UserName"
+                                       class="form-label">
+                                    User Name
+                                </label>
+
+                                <input asp-for="UserName"
+                                       class="form-control"
+                                       autocomplete="off"
+                                       placeholder="Instructor name"
+                                       required />
+
+                                <span asp-validation-for="UserName"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Password
+                                </label>
+
+                                <input type="password"
+                                       name="password"
+                                       class="form-control"
+                                       autocomplete="new-password"
+                                       placeholder="Enter password"
+                                       required
+                                       minlength="6" />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label asp-for="Specialization"
+                                       class="form-label">
+                                    Specialization
+                                </label>
+
+                                <input asp-for="Specialization"
+                                       class="form-control"
+                                       autocomplete="off"
+                                       placeholder="Example: Cyber Security"
+                                       required />
+
+                                <span asp-validation-for="Specialization"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label asp-for="ProfileImg"
+                                       class="form-label">
+                                    Profile Image URL
+                                </label>
+
+                                <input asp-for="ProfileImg"
+                                       class="form-control"
+                                       autocomplete="off"
+                                       placeholder="https://example.com/profile.jpg" />
+
+                                <span asp-validation-for="ProfileImg"
+                                      class="text-danger small">
+                                </span>
+
+                                <div class="form-text">
+                                    This field is optional.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lesson-form-next">
+
+                            <div>
+
+                                <span class="lesson-form-next-label">
+                                    Create Account
+                                </span>
+
+                                <strong>
+                                    Add Instructor
+                                </strong>
+
+                                <p>
+                                    The instructor will be created with the Instructor role.
+                                </p>
+
+                            </div>
+
+                            <button type="submit"
+                                    class="btn edu-btn-primary">
+
+                                Create Instructor
+                                <span class="ms-1">
+                                    →
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-</div>
+
+</section>
 
 @section Scripts {
+
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
     }
+
 }

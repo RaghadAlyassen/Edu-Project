@@ -4,144 +4,266 @@
     ViewData["Title"] = "My Courses";
 }
 
-<div class="container mt-4">
+<section class="edu-page-section">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="container">
 
-        <div>
-            <h2>My Courses</h2>
+        <div class="edu-page-header">
 
-            <p class="text-muted mb-0">
-                Courses you are currently enrolled in.
-            </p>
+            <span class="edu-hero-badge">
+                My Learning
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        My Courses
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Continue your enrolled courses, access lessons and take available exams.
+                    </p>
+
+                </div>
+
+                <a asp-controller="Enrollment"
+                   asp-action="Courses"
+                   class="btn edu-btn-primary">
+
+                    Browse Courses
+                    <span class="ms-1">
+                        →
+                    </span>
+
+                </a>
+
+            </div>
+
         </div>
 
-        <a asp-controller="Enrollment"
-           asp-action="Courses"
-           class="btn btn-primary">
-            Browse Courses
-        </a>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mb-4">
+                @TempData["SuccessMessage"]
+            </div>
+        }
 
-    </div>
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mb-4">
+                @TempData["ErrorMessage"]
+            </div>
+        }
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
-        </div>
-    }
+        @if (Model == null || !Model.Any())
+        {
+            <div class="dashboard-panel">
 
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["ErrorMessage"]
-        </div>
-    }
+                <div class="dashboard-empty-state">
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">
-            You are not enrolled in any courses yet.
-        </div>
-    }
-    else
-    {
-        <div class="row">
+                    <div class="dashboard-empty-icon">
+                        C
+                    </div>
 
-            @foreach (var enrollment in Model)
-            {
-                <div class="col-md-6 col-lg-4 mb-4">
+                    <h4>
+                        No enrolled courses
+                    </h4>
 
-                    <div class="card h-100 shadow-sm">
+                    <p>
+                        You are not enrolled in any courses yet.
+                    </p>
 
-                        <div class="card-body">
+                    <a asp-controller="Enrollment"
+                       asp-action="Courses"
+                       class="btn edu-btn-primary">
 
-                            <h5 class="card-title">
-                                @enrollment.Course.Title
-                            </h5>
+                        Browse Available Courses
 
-                            <p class="card-text text-muted">
-                                @enrollment.Course.Descciption
-                            </p>
+                    </a>
 
-                            <p>
-                                <strong>Price:</strong>
-                                @enrollment.Course.Price
-                            </p>
+                </div>
 
-                            @if (enrollment.Course.Category != null)
-                            {
-                                <p>
-                                    <strong>Category:</strong>
-                                    @enrollment.Course.Category.Name
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+
+                @foreach (var enrollment in Model)
+                {
+                    <div class="col-md-6 col-xl-4">
+
+                        <div class="edu-course-card student-course-card">
+
+                            <div class="course-card-top">
+
+                                <div class="course-card-icon">
+
+                                    @if (!string.IsNullOrWhiteSpace(enrollment.Course?.Title))
+                                    {
+                                        @(enrollment.Course.Title.Substring(0, 1).ToUpper())
+                                    }
+                                    else
+                                    {
+                                        <span>C</span>
+                                    }
+
+                                </div>
+
+                                <span class="student-enrolled-badge">
+                                    Enrolled
+                                </span>
+
+                            </div>
+
+                            <div class="edu-course-body">
+
+                                <span class="edu-course-category">
+                                    @(enrollment.Course?.Category?.Name ?? "General")
+                                </span>
+
+                                <h3 class="edu-course-title">
+                                    @(enrollment.Course?.Title ?? "Course")
+                                </h3>
+
+                                <p class="edu-course-description">
+
+                                    @if (!string.IsNullOrWhiteSpace(enrollment.Course?.Descciption))
+                                    {
+                                        @enrollment.Course.Descciption
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            No description available for this course.
+                                        </span>
+                                    }
+
                                 </p>
-                            }
 
-                            @if (enrollment.Course.Instructor != null)
-                            {
-                                <p>
-                                    <strong>Instructor:</strong>
-                                    @enrollment.Course.Instructor.UserName
-                                </p>
-                            }
+                                <div class="student-course-info">
 
-                            <p>
-                                <strong>Enrollment Date:</strong>
-                                @enrollment.EnrollmentDate.ToString("dd/MM/yyyy")
-                            </p>
+                                    <div class="student-course-info-item">
 
-                            <div class="d-grid gap-2">
+                                        <span>
+                                            Instructor
+                                        </span>
 
-                                <a asp-controller="Lesson"
-                                   asp-action="CourseLessons"
-                                   asp-route-courseId="@enrollment.CourseId"
-                                   class="btn btn-outline-primary">
+                                        <strong>
+                                            @(enrollment.Course?.Instructor?.UserName ?? "N/A")
+                                        </strong>
 
-                                    View Lessons
+                                    </div>
 
-                                </a>
+                                    <div class="student-course-info-item">
 
-                                @if (enrollment.Course.Finalexam != null)
-                                {
-                                    <a asp-controller="FinalExam"
-                                       asp-action="Take"
-                                       asp-route-finalExamId="@enrollment.Course.Finalexam.Id"
-                                       class="btn btn-warning">
+                                        <span>
+                                            Price
+                                        </span>
 
-                                        Take Final Exam
+                                        @if (enrollment.Course != null &&
+                                             enrollment.Course.Price > 0)
+                                        {
+                                            <strong>
+                                                @enrollment.Course.Price EGP
+                                            </strong>
+                                        }
+                                        else
+                                        {
+                                            <strong class="student-free-text">
+                                                Free
+                                            </strong>
+                                        }
 
-                                    </a>
-                                }
+                                    </div>
 
-                                <form asp-controller="Enrollment"
-                                      asp-action="Unenroll"
-                                      method="post">
+                                    <div class="student-course-info-item">
 
-                                    @Html.AntiForgeryToken()
+                                        <span>
+                                            Enrolled On
+                                        </span>
 
-                                    <input type="hidden"
-                                           name="courseId"
-                                           value="@enrollment.CourseId" />
+                                        <strong>
+                                            @enrollment.EnrollmentDate.ToString("dd MMM yyyy")
+                                        </strong>
 
-                                    <button type="submit"
-                                            class="btn btn-outline-danger w-100">
+                                    </div>
 
-                                        Unenroll
+                                    <div class="student-course-info-item">
 
-                                    </button>
+                                        <span>
+                                            Status
+                                        </span>
 
-                                </form>
+                                        <strong class="student-free-text">
+                                            Active
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="edu-course-footer">
+
+                                    <div class="my-course-actions">
+
+                                        <a asp-controller="Lesson"
+                                           asp-action="CourseLessons"
+                                           asp-route-courseId="@enrollment.CourseId"
+                                           class="btn edu-btn-primary">
+
+                                            View Lessons
+
+                                        </a>
+
+                                        @if (enrollment.Course?.Finalexam != null)
+                                        {
+                                            <a asp-controller="FinalExam"
+                                               asp-action="Take"
+                                               asp-route-finalExamId="@enrollment.Course.Finalexam.Id"
+                                               class="btn edu-btn-outline">
+
+                                                Take Final Exam
+
+                                            </a>
+                                        }
+
+                                        <form asp-controller="Enrollment"
+                                              asp-action="Unenroll"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="courseId"
+                                                   value="@enrollment.CourseId" />
+
+                                            <button type="submit"
+                                                    class="btn dashboard-danger-button w-100"
+                                                    onclick="return confirm('Are you sure you want to unenroll from this course?');">
+
+                                                Unenroll
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
                         </div>
 
                     </div>
+                }
 
-                </div>
-            }
+            </div>
+        }
 
-        </div>
-    }
+    </div>
 
-</div>
+</section>

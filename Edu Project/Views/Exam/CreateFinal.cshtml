@@ -1,16 +1,216 @@
-﻿@model FinalVM
+﻿@model Edu_Project.Models.FinalVM
 
-<form asp-action="CreateFinal" method="post">
-    <input type="hidden" name="courseid" value="@Model.courseid" />
+@{
+    ViewData["Title"] = "Create Final Exam";
+}
 
-    <label>Title : </label>
-    <input type="text" name="Title" value="@Model.Title" /><br />
+<section class="edu-page-section">
 
-    <label>Duration (minutes): </label>
-    <input type="number" name="duration" value="@Model.duration" /><br />
+    <div class="container">
 
-    <label>Total marks : </label>
-    <input type="number" name="totalmarks" value="@Model.totalmarks" /><br />
+        <div class="edu-page-header">
 
-    <button type="submit">Questions</button>
-</form>
+            <span class="edu-hero-badge">
+                Final Exam
+            </span>
+
+            <div>
+
+                <h1 class="edu-page-title">
+                    Create Final Exam
+                </h1>
+
+                <p class="edu-page-subtitle mb-0">
+                    Configure the final exam and choose the number of questions.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-xl-9">
+
+                <div class="lesson-form-card">
+
+                    <div class="lesson-form-header">
+
+                        <div class="lesson-form-icon">
+                            F
+                        </div>
+
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                New Final Exam
+                            </span>
+
+                            <h2>
+                                Final Exam Information
+                            </h2>
+
+                            <p>
+                                Set the title, duration, marks and number of questions.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <form asp-action="CreateFinal"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               asp-for="courseid" />
+
+                        <div asp-validation-summary="All"
+                             class="alert alert-danger mb-4">
+                        </div>
+
+                        <div class="row g-4">
+
+                            <div class="col-12">
+
+                                <label asp-for="Title"
+                                       class="form-label">
+                                    Final Exam Title
+                                </label>
+
+                                <input asp-for="Title"
+                                       class="form-control"
+                                       placeholder="Example: Cyber Security Final Exam"
+                                       required />
+
+                                <span asp-validation-for="Title"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label asp-for="duration"
+                                       class="form-label">
+                                    Duration
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input asp-for="duration"
+                                           type="number"
+                                           min="1"
+                                           class="form-control"
+                                           placeholder="30"
+                                           required />
+
+                                    <span class="input-group-text">
+                                        minutes
+                                    </span>
+
+                                </div>
+
+                                <span asp-validation-for="duration"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label asp-for="totalmarks"
+                                       class="form-label">
+                                    Total Marks
+                                </label>
+
+                                <input asp-for="totalmarks"
+                                       type="number"
+                                       min="1"
+                                       class="form-control"
+                                       placeholder="10"
+                                       required />
+
+                                <span asp-validation-for="totalmarks"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label asp-for="numberOfQuestions"
+                                       class="form-label">
+                                    Number of Questions
+                                </label>
+
+                                <input asp-for="numberOfQuestions"
+                                       type="number"
+                                       min="1"
+                                       max="50"
+                                       class="form-control"
+                                       required />
+
+                                <span asp-validation-for="numberOfQuestions"
+                                      class="text-danger small">
+                                </span>
+
+                                <div class="form-text">
+                                    Choose between 1 and 50 questions.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lesson-form-next">
+
+                            <div>
+
+                                <span class="lesson-form-next-label">
+                                    Next Step
+                                </span>
+
+                                <strong>
+                                    Add Final Exam Questions
+                                </strong>
+
+                                <p>
+                                    The question builder will open with the number of questions you selected.
+                                </p>
+
+                            </div>
+
+                            <button type="submit"
+                                    class="btn edu-btn-primary">
+
+                                Add Questions
+                                <span class="ms-1">
+                                    →
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
+    }
+
+}

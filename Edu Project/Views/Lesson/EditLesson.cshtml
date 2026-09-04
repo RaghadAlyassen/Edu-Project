@@ -1,14 +1,230 @@
-﻿@model Lesson
-<form asp-action="EditLesson" method="post">
-    <p>
-        <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="CourseId" />
-        <label>Title : </label>
-        <input type="text" asp-for="Title" value="@Model.Title" /><br />
-        <label>description : </label>
-        <input type="text" asp-for="Description" value="@Model.Description" /><br />
-        <label>video link : </label>
-        <input type="url" asp-for="VideoURL" value=@Model.VideoURL />
-        <button type="submit">Submit</button>
-    </p>
-</form>
+﻿@model Edu_Project.Models.Lesson
+
+@{
+    ViewData["Title"] = "Edit Lesson";
+}
+
+<section class="edu-page-section">
+
+    <div class="container">
+
+        <div class="edu-page-header">
+
+            <span class="edu-hero-badge">
+                Lesson Management
+            </span>
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+
+                <div>
+
+                    <h1 class="edu-page-title">
+                        Edit Lesson
+                    </h1>
+
+                    <p class="edu-page-subtitle mb-0">
+                        Update lesson information and keep your course content organized.
+                    </p>
+
+                </div>
+
+                <a asp-controller="Lesson"
+                   asp-action="LessonDetailsForInstructor"
+                   asp-route-id="@Model.CourseId"
+                   class="btn edu-btn-outline">
+
+                    Back to Lessons
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-xl-9">
+
+                <div class="lesson-form-card">
+
+                    <div class="lesson-form-header">
+
+                        <div class="lesson-form-icon">
+                            E
+                        </div>
+
+                        <div>
+
+                            <span class="dashboard-panel-label">
+                                Lesson Editor
+                            </span>
+
+                            <h2>
+                                Lesson Information
+                            </h2>
+
+                            <p>
+                                Edit the lesson details below and save your changes.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <form asp-action="EditLesson"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All"
+                             class="alert alert-danger mb-4">
+                        </div>
+
+                        <input type="hidden"
+                               asp-for="Id" />
+
+                        <input type="hidden"
+                               asp-for="CourseId" />
+
+                        <div class="row g-4">
+
+                            <div class="col-md-8">
+
+                                <label asp-for="Title"
+                                       class="form-label">
+                                    Lesson Title
+                                </label>
+
+                                <input asp-for="Title"
+                                       class="form-control"
+                                       placeholder="Lesson title"
+                                       required />
+
+                                <span asp-validation-for="Title"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label asp-for="Order"
+                                       class="form-label">
+                                    Lesson Order
+                                </label>
+
+                                <input asp-for="Order"
+                                       type="number"
+                                       class="form-control"
+                                       min="1"
+                                       required />
+
+                                <span asp-validation-for="Order"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label asp-for="VideoURL"
+                                       class="form-label">
+                                    Video URL
+                                </label>
+
+                                <input asp-for="VideoURL"
+                                       type="url"
+                                       class="form-control"
+                                       placeholder="https://www.youtube.com/..."
+                                       required />
+
+                                <span asp-validation-for="VideoURL"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label asp-for="Description"
+                                       class="form-label">
+                                    Description
+                                </label>
+
+                                <textarea asp-for="Description"
+                                          class="form-control"
+                                          rows="5"
+                                          placeholder="Write the lesson description..."
+                                          required></textarea>
+
+                                <span asp-validation-for="Description"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="lesson-form-next">
+
+                            <div>
+
+                                <span class="lesson-form-next-label">
+                                    Save Changes
+                                </span>
+
+                                <strong>
+                                    Update Lesson
+                                </strong>
+
+                                <p>
+                                    Save the changes and return to lesson management.
+                                </p>
+
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap">
+
+                                <a asp-controller="Lesson"
+                                   asp-action="LessonDetailsForInstructor"
+                                   asp-route-id="@Model.CourseId"
+                                   class="btn edu-btn-outline">
+
+                                    Cancel
+
+                                </a>
+
+                                <button type="submit"
+                                        class="btn edu-btn-primary">
+
+                                    Save Changes
+                                    <span class="ms-1">
+                                        →
+                                    </span>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
+    }
+
+}
